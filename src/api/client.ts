@@ -5,6 +5,8 @@
 
 import createClient, { type Middleware } from "openapi-fetch"
 import { Platform } from "react-native"
+import { auth } from "@/auth"
+import { authMiddleware } from "@/auth/middleware"
 import { currentLanguage } from "@/i18n"
 import { env } from "@/lib/env"
 import { GezcezApiError, type ErrorCode } from "./errors"
@@ -37,6 +39,7 @@ const clientHeaders: Middleware = {
 	},
 }
 api.use(clientHeaders)
+api.use(authMiddleware(auth, () => fetchImpl))
 
 type Envelope<T> = { ok: true; data: T }
 type ErrorBody = { ok?: false; error?: { code?: string; message?: string; request_id?: string; details?: Record<string, unknown> } }
