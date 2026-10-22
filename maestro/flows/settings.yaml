@@ -1,0 +1,45 @@
+appId: com.gezcez.app.dev
+name: settings
+tags: [smoke]
+---
+- launchApp
+- tapOn: Me
+- tapOn: Settings
+- assertVisible: "(?i)language"
+# Appearance: dark, then back to system.
+- tapOn: Dark
+- takeScreenshot: settings-dark
+- tapOn:
+    text: System
+    index: 1
+# Language switch applies at once.
+- tapOn: Türkçe
+- assertVisible: Ayarlar
+- tapOn: English
+- assertVisible: Settings
+# Usage counts opt-out and back on.
+- tapOn: Anonymous usage counts
+- tapOn: Anonymous usage counts
+# Developer section unlocks after seven taps on the version.
+- back
+- tapOn: About gezcez
+- repeat:
+    times: 7
+    commands:
+      - tapOn: "Version .*"
+- back
+- tapOn: Settings
+- scrollUntilVisible:
+    element: Copy debug info
+- assertVisible: Update channel
+- back
+# Privacy centre and the data deletion screen (also reachable as gezcez-dev://privacy/delete).
+- tapOn: Privacy centre
+- scrollUntilVisible:
+    element: Delete my data
+- tapOn: Delete my data
+- assertVisible: Delete your data
+- assertVisible: Delete data on this phone
+- back
+- openLink: gezcez-dev://privacy/delete
+- assertVisible: Delete your data

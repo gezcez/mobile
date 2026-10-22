@@ -1,0 +1,22 @@
+appId: com.gezcez.app.dev
+name: sign-in
+tags: [smoke, auth]
+# Mock mode: the auth browser returns a code at once and the mock token endpoint signs in, so the
+# whole PKCE flow, Me signed-in card and sign out run without the OAuth web pages.
+---
+- launchApp
+- tapOn: Me
+- assertVisible: Sign in or create a gezcez account
+- tapOn: Sign in
+- extendedWaitUntil:
+    visible: "(?i)signed in as"
+    timeout: 15000
+- assertVisible: Manage account
+- assertVisible: Delete account
+- tapOn: Sign out
+- tapOn:
+    text: Sign out
+    index: 1
+- extendedWaitUntil:
+    visible: Sign in or create a gezcez account
+    timeout: 10000

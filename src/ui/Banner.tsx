@@ -51,7 +51,7 @@ export function Banner({
 		</View>
 	)
 	return onPress ? (
-		<Pressable accessibilityRole="button" onPress={onPress}>
+		<Pressable accessibilityRole="button" accessibilityLabel={body ? `${title}. ${body}` : title} onPress={onPress}>
 			{inner}
 		</Pressable>
 	) : (

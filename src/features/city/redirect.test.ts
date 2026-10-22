@@ -9,4 +9,9 @@ describe("deep link rewrite", () => {
 		expect(redirectSystemPath({ path: "/stop/kocaeli-bus/4.41003", initial: true })).toBe("/stop/kocaeli-bus/4.41003")
 		expect(redirectSystemPath({ path: "/city", initial: true })).toBe("/city")
 	})
+	it("opens the privacy centre and data deletion", () => {
+		expect(redirectSystemPath({ path: "gezcez://privacy", initial: true })).toBe("/me/privacy")
+		expect(redirectSystemPath({ path: "gezcez-preview://privacy/delete", initial: true })).toBe("/me/delete-data")
+		expect(redirectSystemPath({ path: "/privacy/delete?from=store", initial: false })).toBe("/me/delete-data")
+	})
 })

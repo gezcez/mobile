@@ -11,7 +11,9 @@ import { persistOptions, queryClient, wireQueryManagers } from "@/api/queryClien
 import { auth } from "@/auth"
 import { wireFavouritesSync } from "@/features/favourites/syncWiring"
 import { usePrefsStore } from "@/features/settings/usePrefsStore"
+import { useTelemetry } from "@/features/settings/useTelemetry"
 import { useAppConfig } from "@/features/network/hooks"
+import { useUpdatePrompts } from "@/features/network/useUpdatePrompts"
 import { i18n } from "@/i18n"
 import { env } from "@/lib/env"
 import { initSentry, wrapRoot } from "@/lib/sentry"
@@ -69,6 +71,8 @@ function RootLayout() {
 
 function RootStack() {
 	const t = useTheme()
+	useTelemetry()
+	useUpdatePrompts()
 	const onboarded = usePrefsStore((s) => s.onboarded)
 	const config = useAppConfig()
 	const mustUpdate = isBelow(env.appVersion, config.data?.minSupportedVersion)
@@ -93,6 +97,8 @@ function RootStack() {
 				<Stack.Screen name="save-to-group" options={sheet} />
 				<Stack.Screen name="vehicle/[networkId]/[vehicleId]" options={sheet} />
 				<Stack.Screen name="group-edit" options={{ presentation: "modal" }} />
+				<Stack.Screen name="card-add" options={{ presentation: "modal" }} />
+				<Stack.Screen name="card/[cardId]" />
 				<Stack.Screen name="group-map/[groupId]" />
 			</Stack.Protected>
 			<Stack.Screen name="oauth/callback" />

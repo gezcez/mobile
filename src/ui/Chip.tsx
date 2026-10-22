@@ -10,6 +10,7 @@ export function Chip({
 	icon,
 	tone = "default",
 	accessibilityLabel,
+	role = "button",
 }: {
 	label: string
 	selected?: boolean
@@ -17,6 +18,8 @@ export function Chip({
 	icon?: ReactNode
 	tone?: "default" | "inverse"
 	accessibilityLabel?: string
+	/** "radio" inside a radiogroup (single choice), "button" otherwise. */
+	role?: "button" | "radio"
 }) {
 	const t = useTheme()
 	const bg = selected ? t.colors.primary : tone === "inverse" ? t.colors.surfaceInverse : t.colors.surface
@@ -32,8 +35,8 @@ export function Chip({
 	if (!onPress) return content
 	return (
 		<Pressable
-			accessibilityRole="button"
-			accessibilityState={{ selected: !!selected }}
+			accessibilityRole={role}
+			accessibilityState={role === "radio" ? { checked: !!selected } : { selected: !!selected }}
 			accessibilityLabel={accessibilityLabel ?? label}
 			onPress={onPress}
 			hitSlop={6}

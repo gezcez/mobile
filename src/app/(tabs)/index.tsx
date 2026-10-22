@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { Linking, Pressable, RefreshControl, ScrollView, StyleSheet, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAlertCount } from "@/features/alerts/useAlertCount"
+import { CardsStrip } from "@/features/cards/CardsStrip"
 import { useCitySuggestion } from "@/features/city/useCitySuggestion"
 import { SavedStopsStrip, useSavedStops } from "@/features/favourites/SavedStopsStrip"
 import { NearbyRow } from "@/features/nearby/NearbyRow"
@@ -131,6 +132,8 @@ export default function HomeScreen() {
 						<SavedStopsStrip stops={saved} nowMs={now} timeZone={tz} />
 					</>
 				) : null}
+
+				<CardsStrip />
 
 				<SectionHeader eyebrow={t("home.nearby")} />
 				{permission !== "granted" ? (

@@ -4,11 +4,25 @@
 import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 import { appConfigQuery, citiesQuery, cityManifestQuery, networkQuery } from "@/api/queries/transit"
-import type { Capabilities, Network } from "@/api/types"
+import type { AppConfig, Capabilities, Network } from "@/api/types"
 import { useCityStore } from "@/features/city/useCityStore"
 
 export function useAppConfig() {
 	return useQuery(appConfigQuery())
+}
+
+/**
+ * Remote kill switch from /v1/app/config (`cards`, `liveMap`): true unless the backend switched the
+ * feature off. Unknown (no config yet, offline first launch) counts as on; the persisted config
+ * keeps the last answer across cold starts.
+ */
+export function useFeatureEnabled(name: keyof AppConfig["killSwitches"]): boolean {
+	return useAppConfig().data?.killSwitches[name] !== false
+}
+
+/** Boolean feature flag from /v1/app/config, false when absent. */
+export function useFlag(name: string): boolean {
+	return useAppConfig().data?.flags[name] === true
 }
 
 export function useCities() {

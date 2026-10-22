@@ -32,7 +32,7 @@ export default function OAuthCallback() {
 	}, [params])
 	return (
 		<View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 12, backgroundColor: theme.colors.bg }}>
-			<ActivityIndicator color={theme.colors.accent} />
+			<ActivityIndicator color={theme.colors.accent} accessibilityLabel={t("oauth.completing")} />
 			<Text color="inkMuted">{t("oauth.completing")}</Text>
 		</View>
 	)

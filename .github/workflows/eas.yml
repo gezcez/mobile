@@ -1,21 +1,57 @@
 name: eas
 
-# Merges to main publish an OTA update to the preview channel. Store builds are started by hand.
+# OTA updates and store builds (plan 7.4, 15). Every merge to main publishes an OTA to the preview
+# channel. Production OTAs and store builds are started by hand. The runtime version is the native
+# fingerprint, so an update only reaches binaries built from the same native code.
 on:
   push:
     branches: [main]
   workflow_dispatch:
     inputs:
-      profile:
-        description: EAS build profile
+      action:
+        description: What to run
         type: choice
-        options: [development, preview, production]
+        options: [production-update, rollout, rollback, build, submit]
+        default: production-update
+      rollout:
+        description: Rollout percentage for production-update / rollout (10, 50, 100)
+        type: choice
+        options: ["10", "50", "100"]
+        default: "10"
+      critical:
+        description: Mark the production update critical (riders are asked to restart)
+        type: boolean
+        default: false
+      profile:
+        description: EAS build or submit profile
+        type: choice
+        options: [development, preview, production, e2e]
         default: preview
+      platform:
+        description: Platform for build / submit
+        type: choice
+        options: [all, android, ios]
+        default: all
+      message:
+        description: Update message
+        required: false
+
+concurrency:
+  group: eas-${{ github.ref }}-${{ inputs.action || 'preview' }}
+  cancel-in-progress: false
+
+env:
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+  SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
+  EAS_PROJECT_ID: ${{ vars.EAS_PROJECT_ID }}
+  IOS_APP_STORE_ID: ${{ vars.IOS_APP_STORE_ID }}
 
 jobs:
   update-preview:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -26,14 +62,22 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
       - run: bun install --frozen-lockfile
-      - run: eas update --channel preview --message "${{ github.event.head_commit.message }}" --non-interactive
+      - name: publish preview update
+        run: eas update --channel preview --message "$MESSAGE" --non-interactive
         env:
           APP_VARIANT: preview
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          MESSAGE: ${{ github.event.head_commit.message }}
+      - name: upload source maps to Sentry
+        if: env.SENTRY_AUTH_TOKEN != ''
+        run: bunx sentry-expo-upload-sourcemaps dist
+        env:
+          APP_VARIANT: preview
 
-  build:
-    if: github.event_name == 'workflow_dispatch'
+  production-update:
+    if: github.event_name == 'workflow_dispatch' && inputs.action == 'production-update'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -44,4 +88,63 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
       - run: bun install --frozen-lockfile
-      - run: eas build --profile ${{ inputs.profile }} --platform all --non-interactive --no-wait
+      - name: publish production update (staged)
+        run: >
+          eas update --channel production --non-interactive
+          --rollout-percentage "${{ inputs.rollout }}"
+          --message "${{ inputs.message || github.sha }}"
+        env:
+          APP_VARIANT: production
+          EAS_UPDATE_CRITICAL: ${{ inputs.critical && '1' || '0' }}
+      - name: upload source maps to Sentry
+        if: env.SENTRY_AUTH_TOKEN != ''
+        run: bunx sentry-expo-upload-sourcemaps dist
+        env:
+          APP_VARIANT: production
+
+  rollout:
+    if: github.event_name == 'workflow_dispatch' && (inputs.action == 'rollout' || inputs.action == 'rollback')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: widen the rollout of the latest production update
+        if: inputs.action == 'rollout'
+        run: eas update:edit --branch production --rollout-percentage "${{ inputs.rollout }}" --non-interactive
+      - name: roll back production to the previous update
+        if: inputs.action == 'rollback'
+        run: eas update:rollback --branch production --non-interactive
+
+  build:
+    if: github.event_name == 'workflow_dispatch' && inputs.action == 'build'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: bun install --frozen-lockfile
+      - run: eas build --profile ${{ inputs.profile }} --platform ${{ inputs.platform }} --non-interactive --no-wait
+
+  submit:
+    if: github.event_name == 'workflow_dispatch' && inputs.action == 'submit'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: eas submit --profile ${{ inputs.profile }} --platform ${{ inputs.platform }} --latest --non-interactive

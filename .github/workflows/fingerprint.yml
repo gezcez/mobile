@@ -1,0 +1,55 @@
+name: fingerprint
+
+# Tells a PR whether it changes native code. A changed fingerprint means a new runtime version: the
+# change cannot ship as an OTA to existing installs and needs a store build (plan 7.4).
+on:
+  pull_request:
+
+jobs:
+  fingerprint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: fingerprint of the PR
+        run: |
+          bun install --frozen-lockfile
+          for v in preview production; do
+            APP_VARIANT=$v node_modules/.bin/fingerprint fingerprint:generate > "$RUNNER_TEMP/head-$v.json"
+          done
+      - name: fingerprint of the base branch
+        run: |
+          git worktree add "$RUNNER_TEMP/base" "${{ github.event.pull_request.base.sha }}"
+          cd "$RUNNER_TEMP/base"
+          bun install --frozen-lockfile
+          for v in preview production; do
+            APP_VARIANT=$v node_modules/.bin/fingerprint fingerprint:generate > "$RUNNER_TEMP/base-$v.json"
+          done
+      - name: compare
+        run: |
+          changed=0
+          for v in preview production; do
+            h=$(node -p "require('$RUNNER_TEMP/head-$v.json').hash")
+            b=$(node -p "require('$RUNNER_TEMP/base-$v.json').hash")
+            if [ "$h" = "$b" ]; then
+              echo "- $v: unchanged ($h), ships as an OTA update" >> "$GITHUB_STEP_SUMMARY"
+            else
+              changed=1
+              echo "- $v: **changed** ($b -> $h), needs a new store build before an OTA" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+          if [ "$changed" = 1 ]; then
+            node_modules/.bin/fingerprint fingerprint:diff "$RUNNER_TEMP/base-production.json" "$RUNNER_TEMP/head-production.json" > "$RUNNER_TEMP/diff.json" || true
+            printf '<details><summary>production diff</summary>\n\n```json\n' >> "$GITHUB_STEP_SUMMARY"
+            head -c 20000 "$RUNNER_TEMP/diff.json" >> "$GITHUB_STEP_SUMMARY"
+            printf '\n```\n</details>\n' >> "$GITHUB_STEP_SUMMARY"
+            echo "::notice title=Native change::This PR changes the runtime fingerprint. Merge it with a store build."
+          fi

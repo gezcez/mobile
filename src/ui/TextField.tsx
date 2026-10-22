@@ -17,13 +17,15 @@ export function TextField({ label, hint, error, style, ref, onFocus, onBlur, ...
 	return (
 		<View style={styles.wrap}>
 			{label ? (
-				<Text variant="label" importantForAccessibility="no">
+				// The input carries the label for screen readers; this label is visual only.
+				<Text variant="label" accessibilityElementsHidden importantForAccessibility="no">
 					{label}
 				</Text>
 			) : null}
 			<TextInput
 				ref={ref}
-				accessibilityLabel={label}
+				accessibilityLabel={label ?? rest.accessibilityLabel ?? rest.placeholder}
+				accessibilityState={{ disabled: rest.editable === false }}
 				accessibilityHint={hint}
 				placeholderTextColor={t.colors.inkSubtle}
 				selectionColor={t.colors.accent}

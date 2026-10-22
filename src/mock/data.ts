@@ -604,7 +604,7 @@ export function wireAppConfig(): W["AppConfig"] {
 			level: "info",
 			title: { tr: "Demo verisi", en: "Demo data" },
 			body: {
-				tr: "Bu derlemede gösterilen hatlar ve otobüsler örnek veridir.",
+				tr: "Bu derlemede gösterilen hatlar ve araçlar örnek veridir.",
 				en: "Lines and buses in this build are sample data.",
 			},
 			url: null,

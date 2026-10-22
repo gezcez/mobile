@@ -4,9 +4,22 @@
 
 import * as Sentry from "@sentry/react-native"
 import { env } from "./env"
-import { scrubDeep, scrubText, scrubUrl } from "./scrub"
+import * as Application from "expo-application"
+import * as Updates from "expo-updates"
+import { scrubCrumb, scrubEvent } from "./scrub"
 
 let enabled = false
+
+/** `com.gezcez.app@26.10.0+42` (plan 15.5), so crashes map to the exact binary. */
+export function sentryRelease(): string {
+	const id = Application.applicationId ?? "com.gezcez.app"
+	return `${id}@${Application.nativeApplicationVersion ?? env.appVersion}+${Application.nativeBuildVersion ?? "0"}`
+}
+
+/** One dist per OTA update, so JS source maps match the bundle that crashed. */
+export function sentryDist(): string {
+	return Updates.updateId ?? `embedded-${Application.nativeBuildVersion ?? "0"}`
+}
 
 export function initSentry() {
 	if (!env.sentryDsn || enabled) return
@@ -18,22 +31,11 @@ export function initSentry() {
 		tracesSampleRate: 0.05,
 		enableAutoSessionTracking: true,
 		attachScreenshot: false,
-		beforeSend(event) {
-			if (event.message) event.message = scrubText(event.message)
-			if (event.request?.url) event.request.url = scrubUrl(event.request.url)
-			if (event.request) delete event.request.query_string
-			if (event.exception?.values)
-				for (const ex of event.exception.values) if (ex.value) ex.value = scrubText(ex.value)
-			if (event.extra) event.extra = scrubDeep(event.extra)
-			if (event.contexts) event.contexts = scrubDeep(event.contexts)
-			delete event.user
-			return event
-		},
-		beforeBreadcrumb(crumb) {
-			if (crumb.data) crumb.data = scrubDeep(crumb.data)
-			if (crumb.message) crumb.message = scrubText(crumb.message)
-			return crumb
-		},
+		attachViewHierarchy: false,
+		release: sentryRelease(),
+		dist: sentryDist(),
+		beforeSend: (event) => scrubEvent(event),
+		beforeBreadcrumb: (crumb) => scrubCrumb(crumb),
 	})
 }
 

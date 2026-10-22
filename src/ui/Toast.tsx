@@ -43,6 +43,7 @@ export function ToastHost() {
 				{current.action ? (
 					<Pressable
 						accessibilityRole="button"
+						accessibilityLabel={current.action.label}
 						onPress={() => {
 							current.action?.onPress()
 							useToastStore.setState({ current: null })

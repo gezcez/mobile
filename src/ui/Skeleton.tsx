@@ -3,7 +3,13 @@ import { useTheme } from "@/theme/theme"
 
 export function Skeleton({ width = "100%", height = 16, radius = 8 }: { width?: DimensionValue; height?: number; radius?: number }) {
 	const t = useTheme()
-	return <View style={{ width, height, borderRadius: radius, backgroundColor: t.colors.skeleton }} />
+	return (
+		<View
+			accessibilityElementsHidden
+			importantForAccessibility="no-hide-descendants"
+			style={{ width, height, borderRadius: radius, backgroundColor: t.colors.skeleton }}
+		/>
+	)
 }
 
 /** Rows shaped like a list of stops or departures. */
