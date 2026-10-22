@@ -83,7 +83,13 @@ jest.mock("react-native-reanimated", () => {
 		__esModule: true,
 		default: Animated,
 		...Animated,
-		useSharedValue: <T>(v: T) => ({ value: v }),
+		useSharedValue: <T>(v: T) => {
+			const sv = { value: v, get: () => sv.value, set: (n: T) => void (sv.value = n) }
+			return sv
+		},
+		runOnJS: <F>(fn: F) => fn,
+		useEvent: () => () => undefined,
+		useHandler: () => ({ context: {}, doDependenciesDiffer: false, useWeb: false }),
 		useAnimatedStyle: (fn: () => object) => fn(),
 		withTiming: <T>(v: T) => v,
 		withRepeat: <T>(v: T) => v,

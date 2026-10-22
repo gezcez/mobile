@@ -60,3 +60,18 @@ describe("useFavouritesStore", () => {
 		expect(useFavouritesStore.getState().groups[1]!.items.map((i) => i.id)).toEqual([b!.id, a!.id])
 	})
 })
+
+describe("drag reorder", () => {
+	it("moves an item to an index and a group to a position", () => {
+		const s = useFavouritesStore.getState()
+		const def = s.ensureDefault()
+		for (const ref of ["A", "B", "C"]) s.addItem(def, { ...stop, refId: ref, label: ref })
+		const c = useFavouritesStore.getState().groups[0]!.items[2]!
+		s.moveItemTo(def, c.id, 0)
+		expect(useFavouritesStore.getState().groups[0]!.items.map((i) => i.refId)).toEqual(["C", "A", "B"])
+		const work = s.createGroup("Work", "navy")
+		s.moveGroupTo(work, 0)
+		const sorted = [...useFavouritesStore.getState().groups].sort((a, b) => a.position - b.position)
+		expect(sorted.map((g) => g.id)).toEqual([work, def])
+	})
+})

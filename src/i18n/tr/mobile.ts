@@ -175,6 +175,7 @@ export const mobile: Catalog<typeof en> = {
 		groupEmpty: "Bu grup boş",
 		tip: "İpucu: kayıtlılarınızı eşitlemek için giriş yapın.",
 		reorderHint: "İşlemler için basılı tutun",
+		reorder: "{{label}} sırasını değiştir",
 	},
 	groupEdit: {
 		createTitle: "Yeni grup",

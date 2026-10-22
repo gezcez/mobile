@@ -11,6 +11,7 @@ import { useFavouritesStore } from "@/features/favourites/useFavouritesStore"
 import { useT } from "@/i18n/useT"
 import { useTheme } from "@/theme/theme"
 import { Button } from "@/ui/Button"
+import { DragList } from "@/ui/DragList"
 import { Card } from "@/ui/Card"
 import { Screen } from "@/ui/Screen"
 import { EmptyState } from "@/ui/States"
@@ -40,13 +41,22 @@ export default function SavedScreen() {
 				{total === 0 ? (
 					<EmptyState icon={<Bookmark size={28} color={theme.colors.accent} />} title={t("saved.empty")} body={t("saved.emptyBody")} />
 				) : null}
-				{sorted.map((g) => (
+				<DragList
+					items={sorted}
+					keyOf={(g) => g.id}
+					labelOf={(g) => g.name}
+					separator={<View style={styles.gap} />}
+					onMove={(from, to) => {
+						const g = sorted[from]
+						if (g) useFavouritesStore.getState().moveGroupTo(g.id, to)
+					}}
+					renderItem={(g, _i, handle, a11y) => (
 					<Pressable
-						key={g.id}
 						testID={`saved-group-${g.id}`}
 						accessibilityRole="button"
 						accessibilityLabel={`${g.name}, ${t("saved.items", { count: g.items.length })}`}
 						onPress={() => router.push({ pathname: "/saved/[groupId]", params: { groupId: g.id } })}
+						{...a11y}
 					>
 						<Card padded={false} style={styles.card}>
 							<View style={[styles.bar, { backgroundColor: theme.groupColor(g.colour) }]} />
@@ -75,9 +85,11 @@ export default function SavedScreen() {
 									</Text>
 								</Pressable>
 							) : null}
+							{handle}
 						</Card>
 					</Pressable>
-				))}
+					)}
+				/>
 				{status === "signed_out" ? (
 					<Card tone="muted" style={styles.footer}>
 						<Text color="inkMuted">{t("saved.signInFooter")}</Text>
@@ -95,6 +107,7 @@ const styles = StyleSheet.create({
 	card: { flexDirection: "row", alignItems: "center", overflow: "hidden" },
 	bar: { width: 6, alignSelf: "stretch" },
 	body: { flex: 1, padding: 16, gap: 2 },
-	pill: { flexDirection: "row", alignItems: "center", gap: 4, height: 32, paddingHorizontal: 12, borderRadius: 999, marginRight: 16 },
+	pill: { flexDirection: "row", alignItems: "center", gap: 4, height: 32, paddingHorizontal: 12, borderRadius: 999, marginRight: 4 },
 	footer: { gap: 12 },
+	gap: { height: 12 },
 })

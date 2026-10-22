@@ -173,6 +173,7 @@ export const mobile = {
 		groupEmpty: "This group is empty",
 		tip: "Tip: sign in to sync your saved items.",
 		reorderHint: "Long press for actions",
+		reorder: "Reorder {{label}}",
 	},
 	groupEdit: {
 		createTitle: "New group",

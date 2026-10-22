@@ -5,6 +5,7 @@ import { router } from "expo-router"
 import { ChevronRight, MapPin } from "lucide-react-native"
 import type { ReactNode } from "react"
 import { useT } from "@/i18n/useT"
+import type { DragRowA11y } from "@/ui/DragList"
 import type { PackIndex } from "@/pack/packIndex"
 import { useTheme } from "@/theme/theme"
 import { ListRow } from "@/ui/ListRow"
@@ -20,7 +21,7 @@ export function openItem(item: FavItem) {
 		})
 }
 
-export function SavedItemRow({ item, indexes, trailing }: { item: FavItem; indexes: readonly PackIndex[]; trailing?: ReactNode }) {
+export function SavedItemRow({ item, indexes, trailing, a11y }: { item: FavItem; indexes: readonly PackIndex[]; trailing?: ReactNode; a11y?: DragRowA11y }) {
 	const { t } = useT()
 	const theme = useTheme()
 	const idx = indexes.find((i) => i.networkId === item.networkId)
@@ -39,6 +40,7 @@ export function SavedItemRow({ item, indexes, trailing }: { item: FavItem; index
 			}
 			trailing={trailing ?? <ChevronRight size={18} color={theme.colors.iconSubtle} />}
 			onPress={() => openItem(item)}
+			{...a11y}
 		/>
 	)
 }

@@ -45,6 +45,10 @@ export interface FavouritesState extends FavDoc {
 	removeItem: (itemId: string) => RemovedItem | null
 	restoreItem: (removed: RemovedItem) => void
 	moveItem: (groupId: string, itemId: string, delta: -1 | 1) => void
+	/** Drag reorder: puts the item at `to` within its group. */
+	moveItemTo: (groupId: string, itemId: string, to: number) => void
+	/** Drag reorder: puts the group at `to` in the position order. */
+	moveGroupTo: (id: string, to: number) => void
 	/** Removes every copy of a stop/route (the bookmark toggle "Remove from saved"). */
 	removeEverywhere: (item: Pick<FavItem, "kind" | "networkId" | "refId">) => RemovedItem[]
 
@@ -65,6 +69,16 @@ function swap<T>(arr: T[], i: number, j: number): T[] {
 	if (i < 0 || j < 0 || i >= arr.length || j >= arr.length) return arr
 	const out = [...arr]
 	;[out[i], out[j]] = [out[j]!, out[i]!]
+	return out
+}
+
+/** Moves arr[from] to index `to` (clamped); the same array when nothing moves. */
+export function moveIndex<T>(arr: readonly T[], from: number, to: number): T[] {
+	const t = Math.max(0, Math.min(arr.length - 1, to))
+	if (from < 0 || from >= arr.length || from === t) return arr as T[]
+	const out = [...arr]
+	const [x] = out.splice(from, 1)
+	out.splice(t, 0, x!)
 	return out
 }
 
@@ -175,6 +189,24 @@ export const useFavouritesStore = create<FavouritesState>()(
 							return { ...g, items: swap(g.items, i, i + delta), updatedAt: now() }
 						}),
 					})),
+
+				moveItemTo: (groupId, itemId, to) =>
+					edit((s) => ({
+						groups: s.groups.map((g) => {
+							if (g.id !== groupId) return g
+							const items = moveIndex(g.items, g.items.findIndex((x) => x.id === itemId), to)
+							return items === g.items ? g : { ...g, items, updatedAt: now() }
+						}),
+					})),
+
+				moveGroupTo: (id, to) =>
+					edit((s) => {
+						const sorted = [...s.groups].sort((a, b) => a.position - b.position)
+						const at = now()
+						return {
+							groups: moveIndex(sorted, sorted.findIndex((g) => g.id === id), to).map((g, p) => (g.position === p ? g : { ...g, position: p, updatedAt: at })),
+						}
+					}),
 
 				removeEverywhere: (target) => {
 					const key = itemKey(target)

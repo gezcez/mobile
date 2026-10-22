@@ -1,8 +1,8 @@
-// Saved group detail: its items (opening the stop or route), move up/down, remove with undo,
+// Saved group detail: its items (opening the stop or route), drag to reorder, remove with undo,
 // edit the group, and the group's live map.
 
 import { router, useLocalSearchParams } from "expo-router"
-import { ArrowDown, ArrowUp, Map as MapIcon, Pencil, Trash2 } from "lucide-react-native"
+import { Map as MapIcon, Pencil, Trash2 } from "lucide-react-native"
 import { StyleSheet, View } from "react-native"
 import { GroupDot } from "@/features/favourites/GroupDot"
 import { SavedItemRow } from "@/features/favourites/SavedItemRow"
@@ -13,6 +13,7 @@ import { usePackIndexes } from "@/pack/packStore"
 import { useTheme } from "@/theme/theme"
 import { Button, IconButton } from "@/ui/Button"
 import { Card } from "@/ui/Card"
+import { DragList } from "@/ui/DragList"
 import { Divider } from "@/ui/ListRow"
 import { Screen } from "@/ui/Screen"
 import { EmptyState } from "@/ui/States"
@@ -40,7 +41,6 @@ export default function GroupScreen() {
 				action: { label: t("common:actions.undo"), onPress: () => useFavouritesStore.getState().restoreItem(removed) },
 			})
 	}
-	const move = (itemId: string, delta: -1 | 1) => useFavouritesStore.getState().moveItem(group.id, itemId, delta)
 
 	return (
 		<Screen
@@ -71,36 +71,33 @@ export default function GroupScreen() {
 					<EmptyState title={t("saved.groupEmpty")} body={t("saved.emptyBody")} />
 				) : (
 					<Card padded={false}>
-						{group.items.map((item, i) => (
-							<View key={item.id}>
-								{i > 0 ? <Divider inset={16} /> : null}
+						<DragList
+							items={group.items}
+							keyOf={(item) => item.id}
+							labelOf={(item) => item.label}
+							separator={<Divider inset={16} />}
+							onMove={(from, to) => {
+								const item = group.items[from]
+								if (item) useFavouritesStore.getState().moveItemTo(group.id, item.id, to)
+							}}
+							renderItem={(item, _i, handle, a11y) => (
 								<SavedItemRow
 									item={item}
 									indexes={indexes}
+									a11y={a11y}
 									trailing={
 										<View style={styles.actions}>
-											<IconButton
-												label={`${t("common:actions.moveUp")}: ${item.label}`}
-												disabled={i === 0}
-												icon={<ArrowUp size={18} color={i === 0 ? theme.colors.inkSubtle : theme.colors.ink} />}
-												onPress={() => move(item.id, -1)}
-											/>
-											<IconButton
-												label={`${t("common:actions.moveDown")}: ${item.label}`}
-												disabled={i === group.items.length - 1}
-												icon={<ArrowDown size={18} color={i === group.items.length - 1 ? theme.colors.inkSubtle : theme.colors.ink} />}
-												onPress={() => move(item.id, 1)}
-											/>
 											<IconButton
 												label={`${t("saved.removeItem")}: ${item.label}`}
 												icon={<Trash2 size={18} color={theme.colors.danger} />}
 												onPress={() => remove(item.id, item.label)}
 											/>
+											{handle}
 										</View>
 									}
 								/>
-							</View>
-						))}
+							)}
+						/>
 					</Card>
 				)}
 			</View>

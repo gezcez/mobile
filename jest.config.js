@@ -1,7 +1,7 @@
 /** @type {import('jest').Config} */
 module.exports = {
 	preset: "jest-expo",
-	setupFiles: ["<rootDir>/src/test/setup.ts"],
+	setupFiles: ["react-native-gesture-handler/jestSetup.js", "<rootDir>/src/test/setup.ts"],
 	setupFilesAfterEnv: ["<rootDir>/src/test/setup-after-env.ts"],
 	testPathIgnorePatterns: ["/node_modules/", "/dist/", "/maestro/"],
 	transformIgnorePatterns: [
