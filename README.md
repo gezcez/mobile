@@ -75,3 +75,13 @@ sign-in returns a demo account. Tests use the same fixtures.
 | `src/features/` | screen building blocks per feature (map layers, favourites + sync, departures) |
 | `src/theme/` | brand tokens (same values as www) and light/dark themes |
 | `maestro/` | e2e flows, run by `.github/workflows/e2e.yml` against a mock-mode build |
+
+## Release
+
+`docs/release.md` is the runbook: variants and EAS profiles, fingerprint runtime versions, preview
+and staged production OTAs, rollback, store builds and submit, force and soft updates. Store
+listing drafts (tr/en), App Store privacy answers, Play Data safety answers and review notes are in
+`docs/store/`. The manual screen reader pass is `docs/a11y-checklist.md`.
+
+E2E: `maestro test maestro/flows` against a mock-mode build (`eas build --profile e2e`, or the
+`e2e` workflow). Flows: onboarding, search to route, save stop, map, sign-in, settings, cards.

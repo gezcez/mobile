@@ -1,0 +1,57 @@
+appId: com.gezcez.app.dev
+name: cards
+tags: [cards]
+# Mock mode, city Kocaeli (the bus network has the card capability). Numbers starting with 9999
+# make the mock backend answer PROVIDER_UNAVAILABLE.
+---
+- launchApp
+- tapOn: Me
+- tapOn: Cards
+- assertVisible: No cards yet
+- tapOn:
+    id: cards-add
+- tapOn:
+    id: card-number
+- inputText: "123"
+- tapOn:
+    id: card-nickname
+- assertVisible: "This does not look like a card number.*"
+- tapOn:
+    id: card-number
+- inputText: "456789012"
+- tapOn:
+    id: card-nickname
+- inputText: "Work card"
+- hideKeyboard
+- tapOn: Student
+- tapOn:
+    id: card-save
+- extendedWaitUntil:
+    visible: "as of .*"
+    timeout: 15000
+- assertVisible: Work card
+- assertVisible: "•••• 9012"
+- assertVisible: "(?i)history"
+- tapOn:
+    id: card-refresh
+- assertVisible: "as of .*"
+- back
+# The list shows the saved card with its last known balance.
+- assertVisible: Work card
+# Operator outage: no balance yet, a notice instead of an empty screen.
+- tapOn:
+    id: cards-add
+- tapOn:
+    id: card-number
+- inputText: "9999000011112222"
+- hideKeyboard
+- tapOn:
+    id: card-save
+- extendedWaitUntil:
+    visible: ".*card system is not responding.*"
+    timeout: 15000
+# Remove it again.
+- tapOn: Remove card
+- tapOn: Remove
+- assertVisible: Work card
+- assertNotVisible: "•••• 2222"

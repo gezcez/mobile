@@ -10,3 +10,6 @@ executionOrder:
     - search-to-route
     - save-stop
     - map
+    - sign-in
+    - settings
+    - cards
