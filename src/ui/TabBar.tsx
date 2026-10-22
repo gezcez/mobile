@@ -14,7 +14,7 @@ const ICONS: Record<string, LucideIcon> = {
 }
 
 /** Brand tab bar: labels always visible, navy pill on the active tab (amber in dark mode). */
-export function TabBar({ state, descriptors, emitter, navigateToTab }: BottomTabBarProps) {
+export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
 	const t = useTheme()
 	const insets = useSafeAreaInsets()
 	return (
@@ -31,8 +31,8 @@ export function TabBar({ state, descriptors, emitter, navigateToTab }: BottomTab
 				const label = typeof options?.title === "string" ? options.title : route.name
 				const Icon = ICONS[route.name.split("/")[0]!] ?? House
 				const onPress = () => {
-					const event = emitter.emit({ type: "tabPress", target: route.key, canPreventDefault: true })
-					if (!focused && !event.defaultPrevented) navigateToTab(route.key)
+					const event = navigation.emit({ type: "tabPress", target: route.key, canPreventDefault: true })
+					if (!focused && !event.defaultPrevented) navigation.navigate(route.name, route.params)
 				}
 				return (
 					<Pressable
@@ -41,7 +41,7 @@ export function TabBar({ state, descriptors, emitter, navigateToTab }: BottomTab
 						accessibilityState={{ selected: focused }}
 						accessibilityLabel={label}
 						onPress={onPress}
-						onLongPress={() => emitter.emit({ type: "tabLongPress", target: route.key })}
+						onLongPress={() => navigation.emit({ type: "tabLongPress", target: route.key })}
 						style={styles.item}
 					>
 						<View style={[styles.pill, focused && { backgroundColor: t.colors.tabActive }]}>

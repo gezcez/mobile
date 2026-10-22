@@ -2,7 +2,7 @@
 // GeoJSON sources and layers drawn on TransitMap: vehicles (SDF marker tinted by route colour,
 // rotated by bearing, clustered on the city map), route lines with a navy casing, and stops.
 
-import { GeoJSONSource, Layer, type GeoJSONSourceRef } from "@maplibre/maplibre-react-native"
+import type { GeoJSONSourceRef } from "@maplibre/maplibre-react-native"
 import type { NativeSyntheticEvent } from "react-native"
 import type { Ref } from "react"
 import type { LiveVehicle } from "@/live/protocol"
@@ -10,6 +10,7 @@ import { freshness } from "@/live/protocol"
 import { colorOr } from "@/lib/color"
 import { palette } from "@/theme/tokens"
 import { useTheme } from "@/theme/theme"
+import { GeoJSONSource, Layer } from "./maplibre"
 import { MAP_FONT } from "./TransitMap"
 
 export interface RouteStyle {
