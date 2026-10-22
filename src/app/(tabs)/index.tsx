@@ -11,6 +11,7 @@ import { useAlertCount } from "@/features/alerts/useAlertCount"
 import { CardsStrip } from "@/features/cards/CardsStrip"
 import { useCitySuggestion } from "@/features/city/useCitySuggestion"
 import { SavedStopsStrip, useSavedStops } from "@/features/favourites/SavedStopsStrip"
+import { homeLiveStops } from "@/features/home/liveBudget"
 import { NearbyRow } from "@/features/nearby/NearbyRow"
 import { useNearby } from "@/features/nearby/useNearby"
 import { useAppConfig, useCurrentCity, useCurrentNetworks } from "@/features/network/hooks"
@@ -31,6 +32,7 @@ import { EmptyState } from "@/ui/States"
 import { Text } from "@/ui/Text"
 
 const DEFAULT_TZ = "Europe/Istanbul"
+const NEARBY_WITH_DEPARTURES = 3
 
 export default function HomeScreen() {
 	const { t } = useT()
@@ -50,6 +52,15 @@ export default function HomeScreen() {
 	const networkIds = useMemo(() => all.map((n) => n.id), [all])
 	const saved = useSavedStops(networkIds)
 	const alerts = useAlertCount(networks)
+	const nearbyItems = nearby.state === "ready" ? nearby.items : null
+	const liveKeys = useMemo(
+		() =>
+			homeLiveStops(
+				saved.map((x) => ({ networkId: x.item.networkId, stopId: x.item.refId })),
+				(nearbyItems ?? []).slice(0, NEARBY_WITH_DEPARTURES).map((x) => ({ networkId: x.stop.networkId, stopId: x.stop.id })),
+			),
+		[saved, nearbyItems],
+	)
 	const suggestion = useCitySuggestion()
 	const [refreshing, setRefreshing] = useState(false)
 	const multi = networks.length > 1
@@ -129,7 +140,7 @@ export default function HomeScreen() {
 				{saved.length ? (
 					<>
 						<SectionHeader eyebrow={t("home.saved")} />
-						<SavedStopsStrip stops={saved} nowMs={now} timeZone={tz} />
+						<SavedStopsStrip stops={saved} nowMs={now} timeZone={tz} liveKeys={liveKeys} />
 					</>
 				) : null}
 
@@ -175,7 +186,8 @@ export default function HomeScreen() {
 									item={item}
 									nowMs={now}
 									timeZone={tz}
-									withDepartures={i < 3}
+									withDepartures={i < NEARBY_WITH_DEPARTURES}
+									live={liveKeys.has(`${item.stop.networkId}:${item.stop.id}`)}
 									networkName={multi ? networks.find((n) => n.id === item.stop.networkId)?.name : null}
 								/>
 							</View>

@@ -7,9 +7,11 @@ import { router } from "expo-router"
 import { Pressable, StyleSheet, View } from "react-native"
 import { departuresQuery } from "@/api/queries/transit"
 import { itemParams } from "@/features/favourites/params"
+import { HOME_DEPARTURES_LIMIT, HOME_POLL_MS } from "@/features/home/liveBudget"
 import { departureTime, groupDepartures, isLive } from "@/features/stops/groupDepartures"
 import { useCountdownText } from "@/features/stops/useCountdownText"
 import { useT } from "@/i18n/useT"
+import { useLiveDepartures } from "@/live/hooks"
 import { formatDistance, walkMinutes } from "@/lib/format"
 import { useTheme } from "@/theme/theme"
 import { LiveDot } from "@/ui/LiveDot"
@@ -24,19 +26,27 @@ export function NearbyRow({
 	nowMs,
 	timeZone,
 	withDepartures,
+	live = false,
 	networkName,
 }: {
 	item: NearbyItem
 	nowMs: number
 	timeZone: string
 	withDepartures: boolean
+	/** Fed over the realtime connection (Home's budget, liveBudget.ts) instead of polling. */
+	live?: boolean
 	networkName?: string | null
 }) {
 	const { t, i18n } = useT()
 	const theme = useTheme()
 	const text = useCountdownText(timeZone)
 	const { stop } = item
-	const deps = useQuery({ ...departuresQuery(stop.networkId, stop.id, 10), enabled: withDepartures, refetchInterval: withDepartures ? 30_000 : false })
+	const fed = useLiveDepartures(stop.networkId, stop.id, HOME_DEPARTURES_LIMIT, withDepartures && live)
+	const deps = useQuery({
+		...departuresQuery(stop.networkId, stop.id, HOME_DEPARTURES_LIMIT),
+		enabled: withDepartures,
+		refetchInterval: withDepartures && !fed ? HOME_POLL_MS : false,
+	})
 	const next = withDepartures ? groupDepartures(deps.data?.items ?? [], { perGroup: 1 })[0]?.next : null
 	const d = formatDistance(item.distanceM, i18n.language)
 	const distance = t("home.walk", { distance: t(`common:distance.${d.unit}`, { value: d.value }), minutes: walkMinutes(item.distanceM) })
