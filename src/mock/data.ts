@@ -360,10 +360,11 @@ export function vehiclesFor(networkSlug: string, nowMs: number): MockVehicle[] {
 				routeId: route.id,
 				direction: trip.direction,
 				tripId: trip.tripId,
-				stopSeq: i + 1,
+				// GTFS-RT semantics: the stop the vehicle is heading to (1-based seq of stop b)
+				stopSeq: i + 2,
 				status: "in_transit",
 				vehicleTs,
-				flags: (stale ? 1 : 0) | (h % 3 === 0 ? 2 : 0) | (i + 1 === list.length - 1 && t > 0.9 ? 4 : 0),
+				flags: (stale ? 1 : 0) | (h % 3 === 0 ? 2 : 0) | (i + 2 === list.length && t > 0.9 ? 4 : 0),
 				plate: `41 ${String.fromCharCode(65 + (h % 26))}${String.fromCharCode(65 + ((h >> 5) % 26))} ${100 + (h % 900)}`,
 				stopId: b.id,
 				headsign: w.stops.get(list[list.length - 1]!)!.name,

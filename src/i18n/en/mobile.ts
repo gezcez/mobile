@@ -131,6 +131,7 @@ export const mobile = {
 		dayType: "Day",
 		noService: "No service on this day",
 		hour: "{{hour}}:00",
+		dayTypes: { weekday: "Weekdays", saturday: "Saturday", sunday: "Sunday" },
 	},
 	vehicle: {
 		title: "Vehicle",
@@ -142,6 +143,10 @@ export const mobile = {
 		openRoute: "Open route",
 		notFound: "This vehicle is no longer reporting.",
 		heading: "Heading to {{headsign}}",
+		runStarted: "Trip started {{time}}",
+		late: "{{min}} min late",
+		onTime: "On time",
+		runsToday: "Trips today: {{count}}",
 	},
 	saved: {
 		title: "Saved",

@@ -133,6 +133,7 @@ export const mobile: Catalog<typeof en> = {
 		dayType: "Gün",
 		noService: "Bu gün sefer yok",
 		hour: "{{hour}}:00",
+		dayTypes: { weekday: "Hafta içi", saturday: "Cumartesi", sunday: "Pazar" },
 	},
 	vehicle: {
 		title: "Araç",
@@ -144,6 +145,10 @@ export const mobile: Catalog<typeof en> = {
 		openRoute: "Hattı aç",
 		notFound: "Bu araç artık konum göndermiyor.",
 		heading: "{{headsign}} yönüne gidiyor",
+		runStarted: "Sefer başlangıcı {{time}}",
+		late: "{{min}} dk gecikmeli",
+		onTime: "Zamanında",
+		runsToday: "Bugünkü seferler: {{count}}",
 	},
 	saved: {
 		title: "Kayıtlı",
