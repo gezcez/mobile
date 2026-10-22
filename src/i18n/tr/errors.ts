@@ -32,7 +32,7 @@ export const errors: Catalog<typeof en> = {
 	USERNAME_TAKEN: "Bu kullanıcı adı zaten kullanılıyor.",
 	NOT_FOUND: "Aradığınızı bulamadık.",
 	CONFLICT: "Bu arada bir şey değişti. Tekrar deneyin.",
-	VERSION_CONFLICT: "Kayıtlılarınız başka bir cihazda değişti. Birleştirdik.",
+	VERSION_CONFLICT: "Kaydettikleriniz başka bir cihazda değişti. Birleştirdik.",
 	RATE_LIMITED: "Çok fazla istek. Biraz bekleyip tekrar deneyin.",
 	PROVIDER_DISABLED: "Bu ağın canlı verisi duraklatıldı.",
 	PROVIDER_UNAVAILABLE: "İşletmecinin sistemi yanıt vermiyor. Daha sonra tekrar deneyin.",

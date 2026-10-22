@@ -34,7 +34,7 @@ export const common: Catalog<typeof en> = {
 	state: {
 		loading: "Yükleniyor",
 		updating: "Güncelleniyor",
-		offline: "Çevrimdışı. {{time}} verileri gösteriliyor.",
+		offline: "Çevrimdışısınız. {{time}} itibarıyla olan bilgiler gösteriliyor.",
 		offlineNoData: "Çevrimdışı",
 		live: "canlı",
 		liveLabel: "Canlı",

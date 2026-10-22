@@ -4,7 +4,7 @@ export const mobile = {
 	onboarding: {
 		welcome: {
 			headline: "Every city's transit, one app.",
-			live: "Live buses and departures",
+			live: "Live vehicles and departures",
 			cities: "Every city we support, in one app",
 			account: "No account needed",
 			getStarted: "Get started",
@@ -12,7 +12,7 @@ export const mobile = {
 		},
 		location: {
 			title: "Find stops near you",
-			body: "gezcez uses your location on your phone to find your city and nearby stops. It is not stored by gezcez.",
+			body: "Gezcez uses your location on your phone to find your city and nearby stops. It is not stored by gezcez.",
 			allow: "Allow location",
 			choose: "Choose city myself",
 		},
@@ -29,7 +29,7 @@ export const mobile = {
 			analytics: "Send anonymous usage counts",
 			analyticsHint: "No IDs, no location. Counts like “stop screen opened” per day.",
 			prefetch: "Downloading stops and routes for {{city}}",
-			firstLaunchOffline: "gezcez needs a connection the first time.",
+			firstLaunchOffline: "Gezcez needs a connection the first time.",
 			noCities: "No cities found",
 		},
 	},
@@ -109,7 +109,7 @@ export const mobile = {
 		vehicles: "Vehicles",
 		timetable: "Timetable",
 		fullTimetable: "Full timetable",
-		noVehicles: "No buses on this route right now",
+		noVehicles: "No vehicles on this route right now",
 		nextScheduled: "Next scheduled departure {{time}}",
 		approximatePath: "Approximate path",
 		directionTo: "To {{headsign}}",
@@ -124,7 +124,7 @@ export const mobile = {
 		atStop: "Near {{stop}}",
 		follow: "Follow on map",
 		notFound: "This route no longer exists.",
-		a11yVehicleBetween: "Bus between stops",
+		a11yVehicleBetween: "Vehicle between stops",
 	},
 	timetable: {
 		title: "Timetable",
@@ -236,7 +236,7 @@ export const mobile = {
 		channel: "Update channel",
 		runtime: "Runtime version",
 		apiUrl: "API",
-		mock: "Mock data",
+		mock: "Sample data",
 		copyDebug: "Copy debug info",
 		devUnlocked: "Developer options unlocked",
 	},
@@ -251,7 +251,7 @@ export const mobile = {
 	},
 	privacy: {
 		title: "Privacy centre",
-		intro: "gezcez collects as little as it can. Here is what happens to your data.",
+		intro: "Gezcez collects as little as it can. Here is what happens to your data.",
 		locationTitle: "Location",
 		locationBody: "Used on your phone to find your city and nearby stops. Not sent to gezcez, except a rounded position (about 100 m) when offline stop data is missing, which is never stored.",
 		analyticsTitle: "Usage counts",

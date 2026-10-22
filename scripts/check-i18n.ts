@@ -16,6 +16,9 @@ function keys(tree: Tree, prefix = ""): Map<string, string> {
 	return out
 }
 
+/** Keys whose value is the bare brand name (chrome), exempt from the sentence-start rule. */
+const BRAND_KEYS = new Set(["common:appName", "mobile:me.about"])
+
 let failed = false
 function fail(msg: string) {
 	failed = true
@@ -27,7 +30,11 @@ for (const ns of Object.keys(resources.en) as (keyof typeof resources.en)[]) {
 	for (const k of en.keys()) if (!tr.has(k)) fail(`tr is missing ${ns}:${k}`)
 	for (const k of tr.keys()) if (!en.has(k)) fail(`en is missing ${ns}:${k}`)
 	for (const [lang, map] of [["en", en], ["tr", tr]] as const)
-		for (const [k, v] of map) if (!v.trim()) fail(`${lang} has an empty string at ${ns}:${k}`)
+		for (const [k, v] of map) {
+			if (!v.trim()) fail(`${lang} has an empty string at ${ns}:${k}`)
+			// "Gezcez" at the start of a sentence, "gezcez" in chrome (ux-review X5).
+			if (/^gezcez\b(?!\.)/.test(v) && !BRAND_KEYS.has(`${ns}:${k}`)) fail(`${lang} ${ns}:${k} starts a sentence with "gezcez"; write "Gezcez"`)
+		}
 }
 if (failed) process.exit(1)
 console.log("i18n catalogs match.")
