@@ -5,9 +5,18 @@ import * as SecureStore from "expo-secure-store"
 import { AppState } from "react-native"
 import { currentLanguage } from "@/i18n"
 import { env } from "@/lib/env"
+import { transportFetch } from "@/lib/transport"
 import { nativeBrowser } from "./request"
-import { createAuthClient } from "./session"
+import { createAuthClient, type AuthBrowser } from "./session"
 import { secureStoreStorage } from "./storage"
+
+/** Mock mode: the "browser" signs in at once, so the whole flow runs against the mock token endpoint. */
+const mockBrowser: AuthBrowser = {
+	authorize: async ({ params, redirectUri }) => ({
+		type: "redirect",
+		url: `${redirectUri}?code=mock-code&state=${encodeURIComponent(params.state ?? "")}`,
+	}),
+}
 
 export const AUTH_SCOPES = ["openid", "profile", "email", "offline_access", "transit"]
 
@@ -23,7 +32,7 @@ export const auth = createAuthClient(
 		storage: secureStoreStorage(SecureStore),
 		locale: currentLanguage,
 	},
-	{ browser: nativeBrowser },
+	{ browser: env.mock ? mockBrowser : nativeBrowser, fetch: transportFetch },
 )
 
 AppState.addEventListener("change", (s) => auth.setAppActive(s === "active"))
