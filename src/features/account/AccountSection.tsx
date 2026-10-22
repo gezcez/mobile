@@ -62,7 +62,7 @@ function AccountCard() {
 					{me.data ? (
 						<>
 							{me.data.displayName ? <Text variant="heading">{me.data.displayName}</Text> : null}
-							<Text color="inkMuted">{me.data.email}</Text>
+							<Text color="inkMuted">{me.data.emailMasked}</Text>
 						</>
 					) : (
 						<Skeleton width="60%" />

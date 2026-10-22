@@ -3,7 +3,7 @@
 // (EXPO_PUBLIC_MOCK=1, so screens work with no backend) and in tests. Same envelope, status codes
 // and error codes as the real API.
 
-import type { ManualSchemas as W } from "@/api/schema.manual"
+import type { W } from "@/api/wire"
 import { base64UrlEncode, utf8Encode } from "@/auth/base64"
 import {
 	networkBySlug,
@@ -145,12 +145,14 @@ export function createMockFetch(opts: MockOptions = {}): typeof fetch {
 				return s ? ok(s) : fail(404, "NOT_FOUND")
 			}
 			if (route(/^\/v1\/routes\/([^/]+)\/shape$/)) {
-				const s = wireShape(decodeURIComponent(m![1]!), q.get("direction") === "1" ? 1 : 0)
+				const d = q.get("direction")
+				const s = wireShape(decodeURIComponent(m![1]!), d === "1" ? 1 : d === "0" ? 0 : undefined)
 				return s ? ok(s) : fail(404, "NOT_FOUND")
 			}
 			if (route(/^\/v1\/routes\/([^/]+)\/timetable$/)) {
 				const dt = (q.get("day_type") as MockDayType | null) ?? localClock(nowMs).dayType
-				const t = wireTimetable(decodeURIComponent(m![1]!), q.get("direction") === "1" ? 1 : 0, dt)
+				const d = q.get("direction")
+				const t = wireTimetable(decodeURIComponent(m![1]!), d === "1" ? 1 : d === "0" ? 0 : undefined, dt, q.get("date"))
 				return t ? ok(t) : fail(404, "NOT_FOUND")
 			}
 			if (route(/^\/v1\/routes\/([^/]+)$/)) {
@@ -164,11 +166,18 @@ export function createMockFetch(opts: MockOptions = {}): typeof fetch {
 			if (path === "/v1/me") {
 				if (!authed) return fail(401, "AUTH_REQUIRED")
 				return ok({
-					public_id: "01JMOCKUSER0000000000000000",
-					email: "rider@test.gezcez.com",
-					display_name: "Demo Rider",
-					username: null,
-					avatar_url: null,
+					user: {
+						id: "01JMOCKUSER0000000000000000",
+						email_masked: "r***@test.gezcez.com",
+						display_name: "Demo Rider",
+						username: null,
+						avatar_initials: "DR",
+						locale: "tr",
+					},
+					amr: ["otp"],
+					auth_time: Math.floor(nowMs / 1000),
+					global: { permissions: [], roles: [] },
+					networks: [],
 				} satisfies W["Me"])
 			}
 			if (path === "/v1/me/favourites") {

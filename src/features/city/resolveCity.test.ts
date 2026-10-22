@@ -3,6 +3,7 @@ import { resolveCity, sortCities } from "./resolveCity"
 
 const city = (id: string, centre: [number, number], bbox: City["bbox"]): City => ({
 	id,
+	numericId: 1,
 	name: { tr: id, en: id },
 	country: "TR",
 	timezone: "Europe/Istanbul",

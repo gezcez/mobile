@@ -1,9 +1,10 @@
 // data.ts
 // Wire-format (snake_case) responses computed from the mock world, shared by the mock fetch, the
-// mock live feed and tests. Shapes follow src/api/schema.manual.ts.
+// mock live feed and tests. Shapes follow src/api/wire.ts: the backend's openapi.json where the
+// endpoint is published, schema.manual.ts where it is not.
 
 import polyline from "@mapbox/polyline"
-import type { ManualSchemas as W } from "@/api/schema.manual"
+import type { W } from "@/api/wire"
 import {
 	getWorld,
 	hash,
@@ -19,13 +20,26 @@ import {
 } from "./world"
 
 const iso = (ms: number) => new Date(ms).toISOString()
+const TZ = "Europe/Istanbul"
+const ROUTE_TYPE = { bus: 3, ferry: 4 } as const
 
 export function networkBySlug(slug: string): MockNetwork | undefined {
 	return getWorld().networks.find((n) => n.slug === slug || String(n.id) === slug)
 }
 
+const networkId = (slug: string) => networkBySlug(slug)?.id ?? 0
+
 export function wireNetworkSummary(n: MockNetwork): W["NetworkSummary"] {
-	return { id: n.id, slug: n.slug, name: n.name, modes: n.modes, colour: n.colour, status: n.status }
+	return {
+		id: n.id,
+		slug: n.slug,
+		name: n.name,
+		operator_name: n.operator,
+		modes: n.modes,
+		colour: n.colour,
+		status: n.status,
+		status_message: n.statusMessage,
+	}
 }
 
 export function wireCity(slug: string): W["City"] | null {
@@ -37,7 +51,7 @@ export function wireCity(slug: string): W["City"] | null {
 		slug: c.slug,
 		name: c.name,
 		country_code: "TR",
-		timezone: "Europe/Istanbul",
+		timezone: TZ,
 		centre: c.centre,
 		bbox: c.bbox,
 		networks: w.networks.filter((n) => n.city === c.slug).map(wireNetworkSummary),
@@ -48,19 +62,18 @@ export function wireCities(): W["City"][] {
 	return getWorld().cities.map((c) => wireCity(c.slug)!)
 }
 
-export function wireNetwork(n: MockNetwork, nowMs: number): W["Network"] {
+export function wireNetwork(n: MockNetwork, nowMs: number): W["ManifestNetwork"] {
 	const city = getWorld().cities.find((c) => c.slug === n.city)!
 	return {
 		id: n.id,
 		slug: n.slug,
-		city_slug: n.city,
+		city_id: city.id,
 		name: n.name,
 		operator_name: n.operator,
 		modes: n.modes,
 		colour: n.colour,
 		status: n.status,
 		status_message: n.statusMessage,
-		timezone: "Europe/Istanbul",
 		capabilities: {
 			stops: true,
 			routes: true,
@@ -83,62 +96,64 @@ export function wireNetwork(n: MockNetwork, nowMs: number): W["Network"] {
 			bike_share: false,
 		},
 		pack_version: `mock-${n.slug}-1`,
-		attribution: {
-			text: n.realtime ? "Unofficial data. Not affiliated with the operator." : "Published timetables.",
-			url: null,
-			licence: null,
-			unofficial: true,
+		attribution: [
+			{
+				name: n.realtime ? "Unofficial data. Not affiliated with the operator." : "Published timetables.",
+				provider: n.realtime ? "kentkart" : "gtfs",
+				url: null,
+			},
+		],
+		privacy: [
+			{
+				provider: n.operator,
+				pulled_data: [
+					{ key: "card_trips", details: "Trips made with your card", is_collected: true, can_optout: false },
+					{ key: "card_photo", details: "Personalised card photo", is_collected: true, can_optout: true },
+				],
+			},
+		],
+		freshness: {
+			static_synced_at: iso(nowMs - 6 * 3600_000),
+			static_may_be_outdated: false,
+			realtime_feed_at: n.realtime ? iso(nowMs - 20_000) : null,
 		},
-		privacy: {
-			providers: [
-				{
-					name: n.operator,
-					optout_url: null,
-					pulled_data: [
-						{ key: "card_trips", label: { tr: "Kartla yapılan yolculuklar", en: "Trips made with your card" }, can_optout: false },
-						{ key: "card_photo", label: { tr: "Kişiselleştirilmiş kart fotoğrafı", en: "Personalised card photo" }, can_optout: true },
-					],
-				},
-			],
-		},
-		freshness: { static_synced_at: iso(nowMs - 6 * 3600_000), realtime_at: n.realtime ? iso(nowMs - 20_000) : null },
-		map: { centre: city.centre, zoom: 12 },
 	}
 }
 
 export function wireManifest(citySlug: string, nowMs: number): W["CityManifest"] | null {
 	const city = wireCity(citySlug)
 	if (!city) return null
+	const { networks: _n, ...cityOnly } = city
 	return {
-		city,
+		city: cityOnly,
+		generated_at: iso(nowMs),
+		map: { centre: city.centre, bbox: city.bbox, initial_zoom: 12 },
 		networks: getWorld()
 			.networks.filter((n) => n.city === citySlug)
 			.map((n) => wireNetwork(n, nowMs)),
+		route_types: [
+			{ mode: "bus", label: { tr: "Otobüs", en: "Bus" } },
+			{ mode: "ferry", label: { tr: "Vapur", en: "Ferry" } },
+		],
 	}
 }
 
 export function wireRouteSummary(r: MockRoute): W["RouteSummary"] {
 	return {
 		id: r.id,
-		network: r.network,
+		network_id: networkId(r.network),
 		short_name: r.shortName,
 		long_name: r.longName,
 		mode: r.mode,
+		route_type: ROUTE_TYPE[r.mode],
 		colour: r.colour.replace("#", ""),
 		text_colour: r.textColour.replace("#", ""),
+		agency: networkBySlug(r.network)?.operator ?? null,
 	}
 }
 
-export function wireStopSummary(s: MockStop, distance?: number): W["StopSummary"] {
-	return {
-		id: s.id,
-		network: s.network,
-		name: s.name,
-		code: s.code,
-		lat: s.lat,
-		lon: s.lon,
-		...(distance !== undefined ? { distance_m: Math.round(distance) } : {}),
-	}
+export function wireStopSummary(s: MockStop): W["StopSummary"] {
+	return { id: s.id, network_id: networkId(s.network), name: s.name, code: s.code, lat: s.lat, lon: s.lon }
 }
 
 export function wireStop(id: string): W["Stop"] | null {
@@ -147,7 +162,7 @@ export function wireStop(id: string): W["Stop"] | null {
 	if (!s) return null
 	return {
 		...wireStopSummary(s),
-		modes: s.modes,
+		code: s.code as unknown as W["Stop"]["code"], // the spec types it as string[] (backend export bug); the API sends a string
 		routes: [...s.routeIds].map((r) => wireRouteSummary(w.routes.get(r)!)),
 	}
 }
@@ -174,63 +189,94 @@ export function wirePack(slug: string): W["Pack"] | null {
 				text_colour: r.textColour.replace("#", ""),
 				directions: ([0, 1] as const).map((d) => ({
 					direction: d,
-					headsign: w.stops.get(r.stops[d][r.stops[d].length - 1]!)!.name,
+					headsign: headsignOf(r, d),
 					stop_ids: r.stops[d],
 				})),
 			})),
 	}
 }
 
+const headsignOf = (r: MockRoute, d: 0 | 1) => getWorld().stops.get(r.stops[d][r.stops[d].length - 1]!)!.name
+const patternId = (r: MockRoute, d: 0 | 1) => `${r.id}.p${d}`
+/** Root-DTO nullable fields are typed string[] by the spec (backend export bug); send what the API sends. */
+const asSpec = <T>(v: string | boolean | null): T => v as unknown as T
+
 export function wireRoute(id: string): W["Route"] | null {
 	const w = getWorld()
 	const r = w.routes.get(id)
 	if (!r) return null
+	const summary = wireRouteSummary(r)
 	return {
-		...wireRouteSummary(r),
-		agency: networkBySlug(r.network)?.operator ?? null,
+		...summary,
+		agency: asSpec(summary.agency),
+		colour: asSpec(summary.colour),
+		text_colour: asSpec(summary.text_colour),
 		directions: ([0, 1] as const).map((d) => ({
 			direction: d,
-			headsign: w.stops.get(r.stops[d][r.stops[d].length - 1]!)!.name,
-			stops: r.stops[d].map((sid, i) => {
-				const s = w.stops.get(sid)!
-				return { id: s.id, name: s.name, code: s.code, lat: s.lat, lon: s.lon, offset_s: r.offsets[d][i]! }
-			}),
+			headsign: headsignOf(r, d),
+			patterns: [
+				{
+					id: patternId(r, d),
+					headsign: headsignOf(r, d),
+					length_m: Math.round(
+						r.stops[d].reduce((acc, sid, i, list) => {
+							if (i === 0) return 0
+							const a = w.stops.get(list[i - 1]!)!
+							const b = w.stops.get(sid)!
+							return acc + haversineM(a.lat, a.lon, b.lat, b.lon)
+						}, 0),
+					),
+					stops: r.stops[d].map((sid, i) => {
+						const s = w.stops.get(sid)!
+						return { id: s.id, name: s.name, lat: s.lat, lon: s.lon, network_id: networkId(r.network), seq: i + 1, offset_s: r.offsets[d][i]! }
+					}),
+				},
+			],
 		})),
 	}
 }
 
-export function wireShape(id: string, direction: 0 | 1): W["Shape"] | null {
+export function wireShape(id: string, direction?: 0 | 1): W["Shape"] | null {
 	const w = getWorld()
 	const r = w.routes.get(id)
 	if (!r) return null
-	const pts: [number, number][] = []
-	const list = r.stops[direction]
-	for (let i = 0; i < list.length; i++) {
-		const s = w.stops.get(list[i]!)!
-		pts.push([s.lat, s.lon])
-		const n = list[i + 1] ? w.stops.get(list[i + 1]!)! : null
-		// a slight bend between stops so the line looks like a street, not a ruler
-		if (n) pts.push([(s.lat + n.lat) / 2 + 0.0003, (s.lon + n.lon) / 2 - 0.0003])
+	const encode = (d: 0 | 1) => {
+		const pts: [number, number][] = []
+		const list = r.stops[d]
+		for (let i = 0; i < list.length; i++) {
+			const s = w.stops.get(list[i]!)!
+			pts.push([s.lat, s.lon])
+			const n = list[i + 1] ? w.stops.get(list[i + 1]!)! : null
+			// a slight bend between stops so the line looks like a street, not a ruler
+			if (n) pts.push([(s.lat + n.lat) / 2 + 0.0003, (s.lon + n.lon) / 2 - 0.0003])
+		}
+		return polyline.encode(pts, 6)
 	}
-	return { route: r.id, direction, polyline: polyline.encode(pts, 6), precision: 6 }
+	const dirs = direction === undefined ? ([0, 1] as const) : [direction]
+	return {
+		route_id: r.id,
+		precision: 6,
+		shapes: dirs.map((d) => ({ direction: d, pattern_id: patternId(r, d), polyline: encode(d) })),
+	}
 }
 
-export function wireTimetable(id: string, direction: 0 | 1, dayType: MockDayType): W["Timetable"] | null {
+export function wireTimetable(id: string, direction: 0 | 1 | undefined, dayType: MockDayType, date: string | null = null): W["Timetable"] | null {
 	const r = getWorld().routes.get(id)
 	if (!r) return null
+	const w = getWorld()
+	const dirs = direction === undefined ? ([0, 1] as const) : [direction]
 	return {
-		route: r.id,
-		direction,
-		date: null,
+		route_id: r.id,
+		date: asSpec(date),
 		day_type: dayType,
-		day_types: [
-			{ key: "weekday", label: { tr: "Hafta içi", en: "Weekdays" } },
-			{ key: "saturday", label: { tr: "Cumartesi", en: "Saturday" } },
-			{ key: "sunday", label: { tr: "Pazar", en: "Sunday" } },
-		],
-		timezone: "Europe/Istanbul",
-		starts: startsFor(r, direction, dayType).map(hhmm),
-		stop_offsets: r.stops[direction].map((sid, i) => ({ stop_id: sid, offset_s: r.offsets[direction][i]! })),
+		service_labels: [dayType === "weekday" ? "Hafta içi" : dayType === "saturday" ? "Cumartesi" : "Pazar"],
+		patterns: dirs.map((d) => ({
+			id: patternId(r, d),
+			direction: d,
+			headsign: headsignOf(r, d),
+			stops: r.stops[d].map((sid, i) => ({ id: sid, name: w.stops.get(sid)!.name, offset_s: r.offsets[d][i]! })),
+			departures: startsFor(r, d, dayType).map((m) => ({ start: hhmm(m), start_s: m * 60, headsign: null, trip_id: `${r.id}:${d}:${m}` })),
+		})),
 	}
 }
 
@@ -327,7 +373,7 @@ export function vehiclesFor(networkSlug: string, nowMs: number): MockVehicle[] {
 	return out
 }
 
-export const COMPACT_FIELDS = [
+export const COMPACT_FIELDS: string[] = [
 	"id",
 	"lat",
 	"lon",
@@ -366,9 +412,12 @@ export function wireVehiclesSnapshot(
 	nowMs: number,
 	p: { routes?: string[]; direction?: 0 | 1; bbox?: number[] },
 ): W["VehiclesSnapshot"] {
+	const n = networkBySlug(networkSlug)
 	return {
-		network: networkSlug,
+		network_id: n?.id ?? 0,
 		feed_ts: Math.floor(nowMs / 1000) - 15,
+		status: n?.status ?? "active",
+		message: asSpec(n?.statusMessage ?? null),
 		fields: COMPACT_FIELDS,
 		vehicles: filterVehicles(vehiclesFor(networkSlug, nowMs), p).map(compactRow),
 	}
@@ -379,20 +428,43 @@ export function wireVehicle(id: string, nowMs: number): W["Vehicle"] | null {
 	for (const n of w.networks) {
 		const v = vehiclesFor(n.slug, nowMs).find((x) => x.id === id)
 		if (!v) continue
+		const startedAt = iso(nowMs - 20 * 60_000)
+		const run = {
+			route_id: v.routeId,
+			direction: v.direction,
+			trip_id: v.tripId,
+			started_at: startedAt,
+			ended_at: null,
+			end_reason: null,
+			first_stop_seq: 1,
+			last_stop_seq: v.stopSeq,
+			scheduled_start: startedAt,
+			start_delay_s: tripDelayS(v.tripId),
+		}
 		return {
 			id: v.id,
-			network: n.slug,
+			network_id: n.id,
+			plate: asSpec(v.plate),
+			label: asSpec(null),
+			live: true,
+			accessible: asSpec((v.flags & 2) !== 0),
+			last_seen_at: iso(v.vehicleTs * 1000),
+			position: {
+				lat: v.lat,
+				lon: v.lon,
+				bearing: v.bearing,
+				speed_ms: v.speedMs,
+				vehicle_ts: v.vehicleTs,
+				feed_ts: Math.floor(nowMs / 1000) - 15,
+				stale: (v.flags & 1) !== 0,
+			},
 			route: wireRouteSummary(w.routes.get(v.routeId)!),
 			direction: v.direction,
-			headsign: v.headsign,
-			lat: v.lat,
-			lon: v.lon,
-			bearing: v.bearing,
-			speed_ms: v.speedMs,
-			plate: v.plate,
-			accessible: (v.flags & 2) !== 0,
-			vehicle_ts: v.vehicleTs,
+			trip_id: asSpec(v.tripId),
+			stop_id: asSpec(v.stopId),
 			stop_seq: v.stopSeq,
+			current_run: run,
+			runs_today: [run],
 		}
 	}
 	return null
@@ -438,8 +510,8 @@ export function wireDepartures(stopId: string, nowMs: number, limit = 30): W["De
 					}
 					items.push({
 						route: wireRouteSummary(route),
-						direction,
 						headsign,
+						trip_id: tripId,
 						scheduled_at: iso(midnightMs + schedS * 1000),
 						predicted_at: predictedS !== null ? iso(midnightMs + predictedS * 1000) : null,
 						vehicle_id: live ? `${net.binding}.v${1000 + (hash(tripId) % 9000)}` : null,
@@ -454,7 +526,7 @@ export function wireDepartures(stopId: string, nowMs: number, limit = 30): W["De
 	}
 	items.sort((a, b) => a._t - b._t)
 	return {
-		stop: stopId,
+		stop: wireStopSummary(stop),
 		generated_at: iso(nowMs),
 		items: items.slice(0, limit).map(({ _t, ...d }) => d),
 	}
@@ -505,14 +577,17 @@ export function wireSearch(q: string, scope: { city?: string; network?: string }
 	return { routes, stops }
 }
 
-export function wireNearby(lat: number, lon: number, radius: number, network?: string): W["StopSummary"][] {
-	return [...getWorld().stops.values()]
-		.filter((s) => !network || s.network === network)
-		.map((s) => ({ s, d: haversineM(lat, lon, s.lat, s.lon) }))
-		.filter((x) => x.d <= Math.min(radius, 1500))
-		.sort((a, b) => a.d - b.d)
-		.slice(0, 30)
-		.map((x) => wireStopSummary(x.s, x.d))
+export function wireNearby(lat: number, lon: number, radius: number, network?: string): W["Nearby"] {
+	const net = network ? networkBySlug(network) : undefined
+	return {
+		items: [...getWorld().stops.values()]
+			.filter((s) => !net || s.network === net.slug)
+			.map((s) => ({ s, d: haversineM(lat, lon, s.lat, s.lon) }))
+			.filter((x) => x.d <= Math.min(radius, 1500))
+			.sort((a, b) => a.d - b.d)
+			.slice(0, 30)
+			.map((x) => ({ ...wireStopSummary(x.s), distance_m: Math.round(x.d), route_ids: [...x.s.routeIds] })),
+	}
 }
 
 export function wireAppConfig(): W["AppConfig"] {

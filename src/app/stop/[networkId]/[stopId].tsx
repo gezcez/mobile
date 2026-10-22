@@ -141,7 +141,12 @@ export default function StopScreen() {
 									onPress={() =>
 										router.push({
 											pathname: "/route/[networkId]/[routeId]",
-											params: { networkId, routeId: g.route.id, dir: String(g.direction), ...(g.next?.vehicleId ? { vehicle: g.next.vehicleId } : {}) },
+											params: {
+												networkId,
+												routeId: g.route.id,
+												...(g.direction !== null ? { dir: String(g.direction) } : { headsign: g.headsign }),
+												...(g.next?.vehicleId ? { vehicle: g.next.vehicleId } : {}),
+											},
 										})
 									}
 								/>

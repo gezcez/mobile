@@ -7,9 +7,8 @@ import { StyleSheet, View } from "react-native"
 import type { Capabilities } from "@/api/types"
 import { capabilityOn, useNetwork } from "@/features/network/hooks"
 import { NetworkStatusBanner } from "@/features/network/StatusBanners"
-import { pickName } from "@/i18n"
 import { useT } from "@/i18n/useT"
-import { openInApp } from "@/lib/links"
+import { openInApp, siteLinks } from "@/lib/links"
 import { toMs } from "@/lib/time"
 import { useAgoText } from "@/lib/useAgoText"
 import { useNow } from "@/lib/useNow"
@@ -63,25 +62,24 @@ export default function NetworkInfoScreen() {
 						{`: ${n.operatorName}`}
 					</Text>
 				) : null}
-				<Text>{n.attribution.text}</Text>
-				{n.attribution.licence ? (
-					<Text variant="caption" color="inkMuted">
-						{n.attribution.licence}
-					</Text>
-				) : null}
+				{n.attribution.map((a) => (
+					<View key={`${a.provider}:${a.name}`} style={styles.attribution}>
+						<Text>{a.name}</Text>
+						{a.url ? (
+							<Button
+								label={t("common:actions.open")}
+								variant="secondary"
+								size="sm"
+								icon={<ExternalLink size={16} color={theme.colors.ink} />}
+								onPress={() => void openInApp(a.url!)}
+							/>
+						) : null}
+					</View>
+				))}
 				{n.freshness.staticSyncedAt ? (
 					<Text variant="caption" color="inkMuted">
 						{t("network.lastUpdate", { ago: agoText(toMs(n.freshness.staticSyncedAt), now) })}
 					</Text>
-				) : null}
-				{n.attribution.url ? (
-					<Button
-						label={t("common:actions.open")}
-						variant="secondary"
-						size="sm"
-						icon={<ExternalLink size={16} color={theme.colors.ink} />}
-						onPress={() => void openInApp(n.attribution.url!)}
-					/>
 				) : null}
 			</Card>
 
@@ -111,20 +109,22 @@ export default function NetworkInfoScreen() {
 				</View>
 			) : null}
 
-			{n.privacy.providers.map((p) => (
-				<View key={p.name}>
-					<SectionHeader eyebrow={t("privacy.operators")} title={t("network.operatorPrivacy", { operator: p.name })} />
+			{n.privacy.map((p) => (
+				<View key={p.provider}>
+					<SectionHeader eyebrow={t("privacy.operators")} title={t("network.operatorPrivacy", { operator: p.provider })} />
 					<Card padded={false} style={styles.card}>
-						{p.pulledData.map((d, i) => (
-							<View key={d.key}>
-								{i > 0 ? <Divider inset={16} /> : null}
-								<ListRow title={pickName(d.label)} subtitle={d.canOptOut ? t("network.canOptOut") : t("network.cannotOptOut")} />
-							</View>
-						))}
+						{p.pulledData
+							.filter((d) => d.isCollected)
+							.map((d, i) => (
+								<View key={d.key}>
+									{i > 0 ? <Divider inset={16} /> : null}
+									<ListRow title={d.details} subtitle={d.canOptOut ? t("network.canOptOut") : t("network.cannotOptOut")} />
+								</View>
+							))}
 					</Card>
-					{p.optOutUrl ? (
+					{p.pulledData.some((d) => d.canOptOut) ? (
 						<View style={styles.card}>
-							<Button label={t("network.optOut")} variant="secondary" onPress={() => void openInApp(p.optOutUrl!)} />
+							<Button label={t("network.optOut")} variant="secondary" onPress={() => void openInApp(siteLinks.privacy)} />
 						</View>
 					) : null}
 				</View>
@@ -137,4 +137,5 @@ const styles = StyleSheet.create({
 	status: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 16, paddingTop: 4 },
 	dot: { width: 10, height: 10, borderRadius: 5 },
 	card: { marginHorizontal: 16, gap: 8, marginTop: 4 },
+	attribution: { gap: 6 },
 })

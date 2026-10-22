@@ -1,6 +1,17 @@
 import { api, unwrap } from "./client"
 import { GezcezApiError } from "./errors"
-import { citiesQuery, cityManifestQuery, departuresQuery, routeQuery, stopQuery } from "./queries/transit"
+import {
+	citiesQuery,
+	cityManifestQuery,
+	departuresQuery,
+	routeQuery,
+	searchQuery,
+	shapeQuery,
+	stopQuery,
+	timetableQuery,
+} from "./queries/transit"
+import type { Departures, Route, Shape, Timetable } from "./types"
+import { networkSlug } from "./types"
 import type { ServerErrorCode } from "./errors"
 import { errors as en } from "@/i18n/en/errors"
 import { errors as tr } from "@/i18n/tr/errors"
@@ -36,6 +47,36 @@ describe("api client over the mock backend", () => {
 		const deps = await run<{ items: { source: string; scheduledAt: string }[] }>(departuresQuery("kocaeli-bus", firstStop, 10))
 		expect(deps.items.length).toBeGreaterThan(0)
 		expect(deps.items.length).toBeLessThanOrEqual(10)
+	})
+
+	it("maps the backend's numeric network ids back to slugs", async () => {
+		await run(citiesQuery())
+		expect(networkSlug(1)).toBe("kocaeli-bus")
+		const found = await run<{ routes: { networkId: string; shortName: string }[] }>(searchQuery("41", { city: "kocaeli" }))
+		expect(found.routes[0]!.networkId).toBe("kocaeli-bus")
+	})
+
+	it("picks the main pattern per direction and merges timetable patterns", async () => {
+		const route = await run<Route>(routeQuery("kocaeli-bus", "4.41265"))
+		const d0 = route.directions.find((d) => d.direction === 0)!
+		expect(d0.stops.map((s) => s.seq)).toEqual(d0.stops.map((_, i) => i + 1))
+		expect(d0.patterns).toHaveLength(1)
+		const shape = await run<Shape>(shapeQuery("kocaeli-bus", "4.41265", 1))
+		expect(shape.polylines.map((p) => p.direction)).toEqual([1])
+		const tt = await run<Timetable>(timetableQuery("kocaeli-bus", "4.41265", 0, { dayType: "saturday" }))
+		expect(tt.dayType).toBe("saturday")
+		expect(tt.departures.length).toBeGreaterThan(10)
+		expect(tt.departures[0]!.start).toMatch(/^\d\d:\d\d$/)
+		expect(tt.stopOffsets[0]!.offsetS).toBe(0)
+	})
+
+	it("keeps departures without a direction and with a headsign", async () => {
+		const deps = await run<Departures>(departuresQuery("kocaeli-bus", "4.41001", 5))
+		expect(deps.stop.networkId).toBe("kocaeli-bus")
+		for (const d of deps.items) {
+			expect(d.direction).toBeNull()
+			expect(d.headsign.length).toBeGreaterThan(0)
+		}
 	})
 
 	it("throws GezcezApiError with the server code and request id", async () => {

@@ -10,6 +10,7 @@ import {
 	toAppConfig,
 	toCity,
 	toDepartures,
+	toManifest,
 	toNetwork,
 	toRoute,
 	toShape,
@@ -51,8 +52,7 @@ export const cityManifestQuery = (citySlug: string) =>
 	queryOptions({
 		queryKey: ["city", citySlug, "manifest"],
 		queryFn: async () => {
-			const m = await unwrap(api.GET("/v1/cities/{slug}/manifest", { params: { path: { slug: citySlug } } }))
-			return { city: toCity(m.city), networks: m.networks.map(toNetwork) }
+			return toManifest(await unwrap(api.GET("/v1/cities/{slug}/manifest", { params: { path: { slug: citySlug } } })))
 		},
 		staleTime: HOUR,
 		meta: { persist: true },
@@ -70,7 +70,7 @@ export const networkQuery = (networkId: string) =>
 export const stopQuery = (networkId: string, stopId: string) =>
 	queryOptions({
 		queryKey: ["net", networkId, "stop", stopId],
-		queryFn: async () => toStop(await unwrap(api.GET("/v1/stops/{stopId}", { params: { path: { stopId } } }))),
+		queryFn: async () => toStop(await unwrap(api.GET("/v1/stops/{stopId}", { params: { path: { stopId } } })), networkId),
 		staleTime: 6 * HOUR,
 		meta: { persist: true },
 	})
@@ -83,6 +83,7 @@ export const departuresQuery = (networkId: string, stopId: string, limit = 30) =
 				await unwrap(
 					api.GET("/v1/stops/{stopId}/departures", { params: { path: { stopId }, query: { limit } } }),
 				),
+				networkId,
 			),
 		staleTime: 15_000,
 		// The last answer is kept on disk for the offline "as of" display.
@@ -92,7 +93,7 @@ export const departuresQuery = (networkId: string, stopId: string, limit = 30) =
 export const routeQuery = (networkId: string, routeId: string) =>
 	queryOptions({
 		queryKey: ["net", networkId, "route", routeId],
-		queryFn: async () => toRoute(await unwrap(api.GET("/v1/routes/{routeId}", { params: { path: { routeId } } }))),
+		queryFn: async () => toRoute(await unwrap(api.GET("/v1/routes/{routeId}", { params: { path: { routeId } } })), networkId),
 		staleTime: 6 * HOUR,
 		meta: { persist: true },
 	})
@@ -105,6 +106,7 @@ export const shapeQuery = (networkId: string, routeId: string, direction: 0 | 1)
 				await unwrap(
 					api.GET("/v1/routes/{routeId}/shape", { params: { path: { routeId }, query: { direction } } }),
 				),
+				direction,
 			),
 		staleTime: 7 * 24 * HOUR,
 		meta: { persist: true },
@@ -125,6 +127,7 @@ export const timetableQuery = (
 						params: { path: { routeId }, query: { direction, date: sel.date, day_type: sel.dayType } },
 					}),
 				),
+				direction,
 			),
 		staleTime: 6 * HOUR,
 		meta: { persist: true },
@@ -143,7 +146,7 @@ export const vehicleQuery = (networkId: string, vehicleId: string) =>
 	queryOptions({
 		queryKey: ["net", networkId, "vehicle", vehicleId],
 		queryFn: async () =>
-			toVehicleDetail(await unwrap(api.GET("/v1/vehicles/{vehicleId}", { params: { path: { vehicleId } } }))),
+			toVehicleDetail(await unwrap(api.GET("/v1/vehicles/{vehicleId}", { params: { path: { vehicleId } } })), networkId),
 		staleTime: 5_000,
 	})
 
@@ -152,7 +155,7 @@ export const searchQuery = (q: string, scope: { city?: string; network?: string 
 		queryKey: ["search", scope.city ?? "", scope.network ?? "", q],
 		queryFn: async () => {
 			const r = await unwrap(api.GET("/v1/search", { params: { query: { q, ...scope } } }))
-			return { routes: r.routes.map(toRouteSummary), stops: r.stops.map(toStopSummary) }
+			return { routes: r.routes.map((x) => toRouteSummary(x)), stops: r.stops.map((x) => toStopSummary(x)) }
 		},
 		staleTime: 5 * MIN,
 		enabled: q.trim().length > 0,
@@ -167,7 +170,7 @@ export const nearbyFallbackQuery = (lat: number, lon: number, network: string, r
 		queryFn: async () =>
 			(
 				await unwrap(api.GET("/v1/stops/nearby", { params: { query: { lat: rLat, lon: rLon, radius, network } } }))
-			).map(toStopSummary),
+			).items.map((s) => toStopSummary(s, network)),
 		staleTime: 5 * MIN,
 	})
 }

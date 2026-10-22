@@ -9,6 +9,7 @@ const dep = (r: string, min: number, extra: Partial<Departure> = {}): Departure 
 	scheduledAt: new Date(Date.UTC(2026, 9, 21, 5, min)).toISOString(),
 	predictedAt: null,
 	vehicleId: null,
+	tripId: null,
 	stopsAway: null,
 	source: "schedule",
 	cancelled: false,
