@@ -1,10 +1,11 @@
 import * as Clipboard from "expo-clipboard"
 import { CircleAlert } from "lucide-react-native"
-import type { ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 import { StyleSheet, View } from "react-native"
 import { errorKey, isApiError } from "@/api/errors"
 import { useT } from "@/i18n/useT"
 import { env } from "@/lib/env"
+import { uuidv7 } from "@/lib/id"
 import { useTheme } from "@/theme/theme"
 import { Button } from "./Button"
 import { Text } from "./Text"
@@ -43,6 +44,8 @@ export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () =>
 	const { t } = useT()
 	const theme = useTheme()
 	const requestId = isApiError(error) ? error.requestId : null
+	// Without a server request id, a client id still gives support something to search for.
+	const [clientId] = useState(() => `c-${uuidv7()}`)
 	return (
 		<View style={styles.wrap} accessibilityRole="alert">
 			<CircleAlert size={28} color={theme.colors.danger} />
@@ -56,7 +59,7 @@ export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () =>
 					variant="secondary"
 					size="sm"
 					onPress={async () => {
-						const id = `${requestId ?? "no-request-id"} · ${env.appVersion} · ${env.variant}`
+						const id = `${requestId ?? clientId} · ${env.appVersion} · ${env.variant}`
 						await Clipboard.setStringAsync(id)
 						toast(t("common:state.debugId", { id }))
 					}}

@@ -36,7 +36,8 @@ export function Button({
 		ghost: { bg: "transparent", fg: c.ink },
 		danger: { bg: "transparent", fg: c.danger, border: c.danger },
 	}
-	const f = fills[variant]
+	// Disabled: muted fill and subtle text instead of a translucent navy (ux-review M9).
+	const f = disabled ? { bg: c.surfaceMuted, fg: c.inkSubtle, border: variant === "secondary" || variant === "danger" ? c.border : undefined } : fills[variant]
 	const height = size === "sm" ? 36 : touchTarget
 	return (
 		<Pressable
@@ -52,7 +53,7 @@ export function Button({
 					backgroundColor: f.bg,
 					borderColor: f.border ?? "transparent",
 					paddingHorizontal: size === "sm" ? 14 : 22,
-					opacity: disabled ? 0.5 : state.pressed ? 0.85 : 1,
+					opacity: !disabled && state.pressed ? 0.85 : 1,
 					alignSelf: fullWidth ? "stretch" : "flex-start",
 				},
 				typeof style === "function" ? style(state) : style,
@@ -61,7 +62,7 @@ export function Button({
 		>
 			<View style={styles.row}>
 				{loading ? <ActivityIndicator color={f.fg} size="small" /> : icon}
-				<Text variant={size === "sm" ? "caption" : "bodyStrong"} style={{ color: f.fg }} numberOfLines={1}>
+				<Text variant={size === "sm" ? "caption" : "bodyStrong"} style={{ color: f.fg, flexShrink: 1 }} numberOfLines={2} align="center">
 					{label}
 				</Text>
 			</View>

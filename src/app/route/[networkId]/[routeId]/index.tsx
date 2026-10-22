@@ -103,8 +103,8 @@ export default function RouteScreen() {
 	const followed = follow && selected ? vehicles.find((v) => v.id === selected) : undefined
 	useEffect(() => {
 		if (!followed) return
-		camera.current?.easeTo({ center: [followed.lon, followed.lat], zoom: 15, bearing: followed.bearing ?? 0, duration: 800 })
-	}, [followed])
+		camera.current?.easeTo({ center: [followed.lon, followed.lat], zoom: 15, bearing: reduceMotion ? 0 : (followed.bearing ?? 0), duration: reduceMotion ? 0 : 800 })
+	}, [followed, reduceMotion])
 
 	const sheetTop = Math.round(height * 0.45)
 
@@ -240,7 +240,7 @@ export default function RouteScreen() {
 														.filter(Boolean)
 														.join(" · ")}
 													leading={p.vehicle.stale ? null : <LiveDot />}
-													trailing={<ChevronRight size={18} color={theme.colors.inkSubtle} />}
+													trailing={<ChevronRight size={18} color={theme.colors.iconSubtle} />}
 													onPress={() => {
 														setSelected(p.vehicle.id)
 														setFollow(true)

@@ -9,7 +9,7 @@ import { pendingItem, type PendingItemParams } from "@/features/favourites/param
 import { useFavouritesStore } from "@/features/favourites/useFavouritesStore"
 import { useT } from "@/i18n/useT"
 import { useTheme } from "@/theme/theme"
-import { GROUP_COLOR_KEYS, type GroupColor } from "@/theme/tokens"
+import { GROUP_COLOR_KEYS, palette, type GroupColor } from "@/theme/tokens"
 import { Button } from "@/ui/Button"
 import { Screen } from "@/ui/Screen"
 import { Text } from "@/ui/Text"
@@ -81,7 +81,7 @@ export default function GroupEditScreen() {
 							onPress={() => setColour(key)}
 							style={[styles.swatch, { backgroundColor: theme.groupColor(key), borderColor: colour === key ? theme.colors.ink : "transparent" }]}
 						>
-							{colour === key ? <Check size={20} color={theme.scheme === "dark" ? "#0b1533" : "#ffffff"} /> : null}
+							{colour === key ? <Check size={20} color={theme.scheme === "dark" ? palette.navy : palette.white} /> : null}
 						</Pressable>
 					))}
 				</View>

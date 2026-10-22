@@ -138,7 +138,7 @@ export default function MapScreen() {
 	const selectedVehicle = selected ? tweened.find((v) => v.id === selected) : undefined
 	useEffect(() => {
 		if (!follow || !selectedVehicle) return
-		camera.current?.easeTo({ center: [selectedVehicle.lon, selectedVehicle.lat], zoom: Math.max(view.zoom, 15), duration: 800 })
+		camera.current?.easeTo({ center: [selectedVehicle.lon, selectedVehicle.lat], zoom: Math.max(view.zoom, 15), duration: reduceMotion ? 0 : 800 })
 		// Follow position changes only; zoom is read once per move.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [follow, selectedVehicle?.lat, selectedVehicle?.lon])
@@ -147,12 +147,12 @@ export default function MapScreen() {
 		const permission = useLocationStore.getState().permission === "granted" ? "granted" : await requestPermission()
 		if (permission !== "granted") return
 		const f = (await getFix()) ?? useLocationStore.getState().fix
-		if (f) camera.current?.easeTo({ center: [f.lon, f.lat], zoom: 15, duration: 600 })
+		if (f) camera.current?.easeTo({ center: [f.lon, f.lat], zoom: 15, duration: reduceMotion ? 0 : 600 })
 	}
 
 	const onCluster = async (clusterId: number, coordinates: [number, number]) => {
 		const zoom = (await vehicleSource.current?.getClusterExpansionZoom(clusterId).catch(() => null)) ?? view.zoom + 2
-		camera.current?.easeTo({ center: coordinates, zoom, duration: 500 })
+		camera.current?.easeTo({ center: coordinates, zoom, duration: reduceMotion ? 0 : 500 })
 	}
 
 	const initial = fix ? { center: [fix.lon, fix.lat] as [number, number], zoom: 13 } : city ? { bounds: city.bbox } : { center: [29.94, 40.77] as [number, number], zoom: 11 }
@@ -282,7 +282,7 @@ export default function MapScreen() {
 													title={r ? `${r.shortName} ${r.longName}` : splitKey(v.id)[1]}
 													subtitle={[v.headsign, agoText(v.vehicleTs * 1000, now)].filter(Boolean).join(" · ")}
 													leading={r ? <RouteBadge shortName={r.shortName} color={r.rawColor} textColor={r.textColor} mode={r.mode} size="sm" /> : v.stale ? null : <LiveDot />}
-													trailing={<ChevronRight size={18} color={theme.colors.inkSubtle} />}
+													trailing={<ChevronRight size={18} color={theme.colors.iconSubtle} />}
 													onPress={() => {
 														setSelected(v.id)
 														setFollow(true)

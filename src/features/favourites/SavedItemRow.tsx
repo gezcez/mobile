@@ -37,7 +37,7 @@ export function SavedItemRow({ item, indexes, trailing }: { item: FavItem; index
 					<MapPin size={20} color={theme.colors.accent} />
 				)
 			}
-			trailing={trailing ?? <ChevronRight size={18} color={theme.colors.inkSubtle} />}
+			trailing={trailing ?? <ChevronRight size={18} color={theme.colors.iconSubtle} />}
 			onPress={() => openItem(item)}
 		/>
 	)

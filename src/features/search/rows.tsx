@@ -30,7 +30,7 @@ export function RouteRow({
 			title={route.longName || route.shortName}
 			leading={
 				<View style={styles.lead}>
-					{recent ? <Clock size={14} color={theme.colors.inkSubtle} /> : null}
+					{recent ? <Clock size={14} color={theme.colors.iconSubtle} /> : null}
 					<RouteBadge shortName={route.shortName} color={route.color} textColor={route.textColor} mode={route.mode} />
 				</View>
 			}
@@ -69,7 +69,7 @@ export function StopRow({
 		<ListRow
 			title={stop.name}
 			subtitle={parts.join(" · ") || null}
-			leading={recent ? <Clock size={18} color={theme.colors.inkSubtle} /> : <MapPin size={18} color={theme.colors.accent} />}
+			leading={recent ? <Clock size={18} color={theme.colors.iconSubtle} /> : <MapPin size={18} color={theme.colors.accent} />}
 			trailing={networkName ? <NetworkBadge name={networkName} /> : null}
 			onPress={() => {
 				onOpen?.()

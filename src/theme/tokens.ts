@@ -15,12 +15,14 @@ export const palette = {
 	amber700: "#b45309",
 	yellow400: "#facc15",
 	navy: "#172554", // blue-950
-	navyDeep: "#0b1533",
+	navyDeep: "#0b1533", // dark map land only (ux-review M6), never a page colour
+	/** white at 5% over navy, made opaque so it also works on top of the map */
+	navyCard: "#23305d",
 	navy900: "#1e3a8a",
 	white: "#ffffff",
 	black: "#000000",
 	red700: "#b91c1c",
-	red400: "#f87171",
+	red300: "#fca5a5",
 	green700: "#15803d",
 	green400: "#4ade80",
 } as const
@@ -32,10 +34,16 @@ export interface ColorTokens {
 	surfaceInverse: string
 	ink: string
 	inkMuted: string
+	/** Smallest text (captions, hints, placeholders): still at least 4.5:1 on bg and surface. */
 	inkSubtle: string
+	/** Decorative glyphs only (chevrons, disabled arrows); not for text. */
+	iconSubtle: string
 	inkInverse: string
 	border: string
+	/** Input and control borders: at least 3:1 (WCAG 1.4.11). */
 	borderStrong: string
+	/** Focus ring and the focused text field border. */
+	focus: string
 	primary: string
 	onPrimary: string
 	secondaryBorder: string
@@ -61,14 +69,17 @@ export const lightColors: ColorTokens = {
 	surfaceInverse: palette.navy,
 	ink: palette.navy,
 	inkMuted: "rgba(23,37,84,0.70)",
-	inkSubtle: "rgba(23,37,84,0.50)",
+	inkSubtle: "rgba(23,37,84,0.66)",
+	iconSubtle: "rgba(23,37,84,0.50)",
 	inkInverse: palette.cream,
 	border: "rgba(23,37,84,0.10)",
-	borderStrong: "rgba(23,37,84,0.20)",
+	borderStrong: "rgba(23,37,84,0.52)",
+	focus: palette.amber700,
 	primary: palette.navy,
 	onPrimary: palette.cream,
-	secondaryBorder: "rgba(23,37,84,0.20)",
-	accent: palette.amber600,
+	secondaryBorder: "rgba(23,37,84,0.52)",
+	// amber-700 for icons, selection and switches (4.8:1 on cream); amber-600 stays for live and map
+	accent: palette.amber700,
 	onAccent: palette.navy,
 	eyebrow: palette.amber700,
 	cta: palette.amber400,
@@ -84,25 +95,27 @@ export const lightColors: ColorTokens = {
 }
 
 export const darkColors: ColorTokens = {
-	bg: palette.navyDeep,
-	surface: palette.navy,
-	surfaceMuted: "rgba(255,255,255,0.05)",
+	bg: palette.navy,
+	surface: palette.navyCard,
+	surfaceMuted: "rgba(255,255,255,0.08)",
 	surfaceInverse: palette.cream,
 	ink: palette.cream,
 	inkMuted: "rgba(255,251,235,0.72)",
-	inkSubtle: "rgba(255,251,235,0.50)",
+	inkSubtle: "rgba(255,251,235,0.62)",
+	iconSubtle: "rgba(255,251,235,0.45)",
 	inkInverse: palette.navy,
 	border: "rgba(255,255,255,0.10)",
-	borderStrong: "rgba(255,255,255,0.20)",
+	borderStrong: "rgba(255,255,255,0.45)",
+	focus: palette.amber400,
 	primary: palette.amber400,
 	onPrimary: palette.navy,
-	secondaryBorder: "rgba(255,255,255,0.25)",
+	secondaryBorder: "rgba(255,255,255,0.45)",
 	accent: palette.amber300,
 	onAccent: palette.navy,
 	eyebrow: palette.amber400,
 	cta: palette.amber400,
 	onCta: palette.navy,
-	danger: palette.red400,
+	danger: palette.red300,
 	success: palette.green400,
 	live: palette.amber300,
 	tabActive: palette.amber400,
@@ -135,6 +148,7 @@ export const typography = {
 	heading: { fontFamily: fontFamily.semibold, fontSize: 17, lineHeight: 22 },
 	body: { fontFamily: fontFamily.regular, fontSize: 16, lineHeight: 22 },
 	bodyStrong: { fontFamily: fontFamily.semibold, fontSize: 16, lineHeight: 22 },
+	label: { fontFamily: fontFamily.semibold, fontSize: 14, lineHeight: 20 },
 	caption: { fontFamily: fontFamily.medium, fontSize: 13, lineHeight: 18 },
 	eyebrow: {
 		fontFamily: fontFamily.semibold,

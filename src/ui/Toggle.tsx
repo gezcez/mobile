@@ -29,7 +29,8 @@ export function ToggleRow({
 				accessibilityHint={description}
 				value={value}
 				onValueChange={onChange}
-				trackColor={{ true: t.colors.accent, false: t.colors.borderStrong }}
+				trackColor={{ true: t.colors.accent, false: t.colors.inkSubtle }}
+				ios_backgroundColor={t.colors.inkSubtle}
 				thumbColor={t.colors.surface}
 			/>
 		</View>

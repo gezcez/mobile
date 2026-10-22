@@ -51,7 +51,7 @@ export function ListRow({
 				) : null}
 			</View>
 			{trailing}
-			{chevron ? <ChevronRight size={18} color={t.colors.inkSubtle} /> : null}
+			{chevron ? <ChevronRight size={18} color={t.colors.iconSubtle} /> : null}
 		</>
 	)
 	if (!onPress && !onLongPress)
