@@ -9,6 +9,7 @@ import { auth } from "@/auth"
 import { authMiddleware } from "@/auth/middleware"
 import { currentLanguage } from "@/i18n"
 import { env } from "@/lib/env"
+import { transportFetch } from "@/lib/transport"
 import { GezcezApiError, type ErrorCode } from "./errors"
 import type { paths as GenPaths } from "./schema.gen"
 import type { ManualPaths } from "./schema.manual"
@@ -19,16 +20,9 @@ export type ApiPaths = GenPaths & ManualPaths
 type Duplicated = keyof GenPaths & keyof ManualPaths
 export const NO_DUPLICATE_PATHS: [Duplicated] extends [never] ? true : Duplicated = true
 
-let fetchImpl: typeof fetch = (...args) => globalThis.fetch(...args)
-
-/** Swap the transport (mock mode, tests). */
-export function setApiFetch(f: typeof fetch) {
-	fetchImpl = f
-}
-
 export const api = createClient<ApiPaths>({
 	baseUrl: env.apiUrl,
-	fetch: (req) => fetchImpl(req),
+	fetch: (req) => transportFetch(req),
 })
 
 const clientHeaders: Middleware = {
@@ -39,7 +33,7 @@ const clientHeaders: Middleware = {
 	},
 }
 api.use(clientHeaders)
-api.use(authMiddleware(auth, () => fetchImpl))
+api.use(authMiddleware(auth, () => transportFetch))
 
 type Envelope<T> = { ok: true; data: T }
 type ErrorBody = { ok?: false; error?: { code?: string; message?: string; request_id?: string; details?: Record<string, unknown> } }

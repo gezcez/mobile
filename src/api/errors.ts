@@ -1,6 +1,7 @@
 // errors.ts
 // GezcezApiError { code, status, requestId } and the code -> i18n key mapping.
 
+import { errors as enMessages } from "@/i18n/en/errors"
 import type { components } from "./schema.gen"
 
 export type ServerErrorCode = components["schemas"]["ErrorCode"]
@@ -47,3 +48,6 @@ export function isRetryable(e: unknown): boolean {
 	if (!isApiError(e)) return true
 	return e.code === "NETWORK" || e.code === "RATE_LIMITED" || e.code === "PROVIDER_UNAVAILABLE" || e.status >= 500
 }
+
+/** Compile-time guard: every code in the generated ErrorCode union has an English message. */
+export const ERROR_MESSAGES: Record<ErrorCode, string> = enMessages

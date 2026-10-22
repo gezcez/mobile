@@ -43,8 +43,10 @@ type Item<Get = never, Post = never, Put = never> = {
 export type I18nText = { tr: string; en: string }
 export type Mode = "bus" | "tram" | "metro" | "rail" | "ferry" | "cable" | "other"
 export type NetworkStatus = "active" | "degraded" | "disabled"
-export type LngLatTuple = [number, number]
-export type BBox = [number, number, number, number]
+/** [lon, lat]; arrays, not tuples, as openapi-typescript renders them. */
+export type LngLatTuple = number[]
+/** [w, s, e, n] */
+export type BBox = number[]
 
 export interface ManualSchemas {
 	NetworkSummary: {
@@ -179,22 +181,11 @@ export interface ManualSchemas {
 		starts: string[]
 		stop_offsets: { stop_id: string; offset_s: number }[]
 	}
-	/** Compact vehicle row, order given by `fields` (backend 6.10). */
-	VehicleRow: [
-		id: string,
-		lat: number,
-		lon: number,
-		bearing: number | null,
-		speed_ms: number | null,
-		route_id: string | null,
-		direction: 0 | 1 | null,
-		trip_id: string | null,
-		stop_seq: number | null,
-		status: string | null,
-		vehicle_ts: number,
-		flags: number,
-		...full: (string | null)[],
-	]
+	/**
+	 * Compact vehicle row in `fields` order (backend 6.10): [id, lat, lon, bearing, speed_ms, route_id,
+	 * direction, trip_id, stop_seq, status, vehicle_ts, flags] plus [plate, stop_id, headsign] for full.
+	 */
+	VehicleRow: (string | number | null)[]
 	VehiclesSnapshot: {
 		network: string
 		feed_ts: number
