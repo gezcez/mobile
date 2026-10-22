@@ -46,3 +46,32 @@ bun run start:mock
 
 Endpoints the backend has not published yet are typed by hand in `src/api/schema.manual.ts`
 (marked MANUAL); delete them there once `api:gen` brings them in.
+
+The checked-in `schema.gen.ts` was generated from the backend-transit `rewrite-transit` branch's
+`openapi.json` (`API_SPEC=../backend-transit/openapi.json bun run api:gen`). That export
+publishes some nullable top-level fields as arrays; `src/api/types.ts` maps both forms.
+
+## Expo Go
+
+Expo Go can open the JS but not the screens that matter: it lacks the MapLibre native module
+(map, route and group maps), and MMKV (persisted stores and the query cache). SecureStore works
+there but the OAuth redirect scheme does not. Use a development build for anything real.
+
+## Mock mode
+
+`bun run start:mock` (`EXPO_PUBLIC_MOCK=1`) answers every REST endpoint and the realtime WS from
+`src/mock/` (two cities, three networks, moving vehicles, departures, favourites, cards), and
+sign-in returns a demo account. Tests use the same fixtures.
+
+## Layout
+
+| Path | What |
+|---|---|
+| `src/app/` | expo-router screens: tabs (Home, Map, Search, Saved, Me), stop, route, vehicle, city, onboarding, sheets |
+| `src/api/` | openapi-fetch client, generated + manual schema, wire to domain mappers, query factories |
+| `src/auth/` | OAuth 2.1 + PKCE client (token storage, refresh, step-up, middleware) |
+| `src/live/` | realtime WS protocol v1, shared socket with backoff, vehicle feeds with REST fallback |
+| `src/pack/` | offline network packs (stops, routes) with nearest-stop and search indexes |
+| `src/features/` | screen building blocks per feature (map layers, favourites + sync, departures) |
+| `src/theme/` | brand tokens (same values as www) and light/dark themes |
+| `maestro/` | e2e flows, run by `.github/workflows/e2e.yml` against a mock-mode build |
