@@ -14,7 +14,7 @@ const DEBOUNCE_MS = 2_000
 
 export const apiTransport: SyncTransport = {
 	get: () => unwrap(api.GET("/v1/me/favourites")),
-	put: (doc, ifMatch) => unwrap(api.PUT("/v1/me/favourites", { body: doc, params: { header: { "If-Match": `"${ifMatch}"` } } })),
+	put: (doc, ifMatch) => unwrap(api.PUT("/v1/me/favourites", { body: doc, params: { header: { "If-Match": `"${ifMatch}"`, "if-match": `"${ifMatch}"` } } })),
 }
 
 /** Starts the wiring; returns a stop function. Called once from the root layout. */

@@ -6,7 +6,7 @@
 import { useQueries } from "@tanstack/react-query"
 import { useMemo } from "react"
 import { api, unwrap } from "@/api/client"
-import type { ManualSchemas } from "@/api/schema.manual"
+import type { W } from "@/api/wire"
 import { toPack, type Network, type Pack } from "@/api/types"
 import { buildIndex, type PackIndex } from "./packIndex"
 import { deviceFileStore, type PackFileStore } from "./fileStore"
@@ -20,7 +20,7 @@ export function setPackFiles(store: PackFileStore) {
 	files = store
 }
 
-async function download(networkId: string): Promise<ManualSchemas["Pack"]> {
+async function download(networkId: string): Promise<W["Pack"]> {
 	return unwrap(api.GET("/v1/networks/{networkId}/pack", { params: { path: { networkId } } }))
 }
 
@@ -31,7 +31,7 @@ export async function loadPack(networkId: string, expectedVersion: string | null
 		const json = await store.read(networkId, exact.version)
 		if (json) {
 			try {
-				return toPack(JSON.parse(json) as ManualSchemas["Pack"])
+				return toPack(JSON.parse(json) as W["Pack"])
 			} catch {
 				// corrupt file: fall through and download again
 			}
@@ -45,7 +45,7 @@ export async function loadPack(networkId: string, expectedVersion: string | null
 	} catch (e) {
 		const older = stored[0]
 		const json = older ? await store.read(networkId, older.version) : null
-		if (json) return toPack(JSON.parse(json) as ManualSchemas["Pack"])
+		if (json) return toPack(JSON.parse(json) as W["Pack"])
 		throw e
 	}
 }
