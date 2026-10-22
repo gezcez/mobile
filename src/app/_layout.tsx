@@ -9,6 +9,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 import { persistOptions, queryClient, wireQueryManagers } from "@/api/queryClient"
 import { auth } from "@/auth"
+import { wireFavouritesSync } from "@/features/favourites/syncWiring"
 import { usePrefsStore } from "@/features/settings/usePrefsStore"
 import { useAppConfig } from "@/features/network/hooks"
 import { i18n } from "@/i18n"
@@ -44,6 +45,8 @@ function RootLayout() {
 			if (e.type === "signed_out") queryClient.removeQueries({ queryKey: ["me"] })
 		})
 	}, [])
+
+	useEffect(() => wireFavouritesSync(), [])
 
 	useEffect(() => {
 		if (loaded || error) void SplashScreen.hideAsync()
@@ -90,6 +93,7 @@ function RootStack() {
 				<Stack.Screen name="save-to-group" options={sheet} />
 				<Stack.Screen name="vehicle/[networkId]/[vehicleId]" options={sheet} />
 				<Stack.Screen name="group-edit" options={{ presentation: "modal" }} />
+				<Stack.Screen name="group-map/[groupId]" />
 				<Stack.Screen name="card-add" options={{ presentation: "modal" }} />
 			</Stack.Protected>
 			<Stack.Screen name="oauth/callback" />
