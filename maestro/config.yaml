@@ -1,0 +1,12 @@
+# Maestro e2e flows. Run against a dev client or preview build started in mock mode
+# (EXPO_PUBLIC_MOCK=1), so every flow is deterministic and needs no backend:
+#   maestro test maestro/flows
+flows:
+  - flows/*
+executionOrder:
+  continueOnFailure: false
+  flowsOrder:
+    - onboarding
+    - search-to-route
+    - save-stop
+    - map

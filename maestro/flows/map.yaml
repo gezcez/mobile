@@ -1,0 +1,12 @@
+appId: com.gezcez.app.dev
+name: map
+---
+- launchApp
+- tapOn: Map
+- extendedWaitUntil:
+    visible: Vehicles in view
+    timeout: 20000
+- tapOn:
+    id: map-search-pill
+- assertVisible:
+    id: search-input

@@ -1,0 +1,16 @@
+appId: com.gezcez.app.dev
+name: onboarding
+tags: [smoke]
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: onboarding-start
+- tapOn:
+    id: onboarding-choose-city
+- tapOn: Kocaeli
+- tapOn:
+    id: onboarding-city-start
+- extendedWaitUntil:
+    visible: Search
+    timeout: 20000
