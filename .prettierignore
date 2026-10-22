@@ -1,0 +1,5 @@
+node_modules
+dist
+.expo
+src/api/schema.gen.ts
+bun.lock
