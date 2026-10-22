@@ -8,6 +8,39 @@ import { create } from "zustand"
 
 export type LocationPermission = "unknown" | "granted" | "denied"
 
+/**
+ * What the rider actually gave us (plan 7.3): precise, approximate only (iOS reduced accuracy or
+ * Android coarse), denied (can ask again), blocked (the OS will not show the prompt again, only
+ * Settings can change it), or device location services switched off.
+ */
+export type LocationAccess = "unknown" | "granted" | "approximate" | "denied" | "blocked" | "servicesOff"
+
+type PermissionLike = {
+	status: string
+	canAskAgain: boolean
+	ios?: { accuracy?: "full" | "reduced" }
+	android?: { accuracy?: "fine" | "coarse" | "none" }
+}
+
+export function classifyAccess(r: PermissionLike, servicesOn: boolean): LocationAccess {
+	if (r.status === "granted") {
+		if (!servicesOn) return "servicesOff"
+		return r.ios?.accuracy === "reduced" || r.android?.accuracy === "coarse" ? "approximate" : "granted"
+	}
+	if (r.status === "denied") return r.canAskAgain ? "denied" : "blocked"
+	return r.canAskAgain ? "unknown" : "blocked"
+}
+
+export const hasLocation = (a: LocationAccess) => a === "granted" || a === "approximate"
+
+async function servicesEnabled(): Promise<boolean> {
+	try {
+		return await Location.hasServicesEnabledAsync()
+	} catch {
+		return true
+	}
+}
+
 export interface Fix {
 	lat: number
 	lon: number
@@ -20,6 +53,7 @@ interface LocationState {
 	canAskAgain: boolean
 	fix: Fix | null
 	locating: boolean
+	access: LocationAccess
 }
 
 export const useLocationStore = create<LocationState>(() => ({
@@ -27,6 +61,7 @@ export const useLocationStore = create<LocationState>(() => ({
 	canAskAgain: true,
 	fix: null,
 	locating: false,
+	access: "unknown",
 }))
 
 export async function refreshPermission(): Promise<LocationPermission> {
@@ -35,6 +70,32 @@ export async function refreshPermission(): Promise<LocationPermission> {
 		const permission: LocationPermission = r.status === "granted" ? "granted" : r.status === "denied" ? "denied" : "unknown"
 		useLocationStore.setState({ permission, canAskAgain: r.canAskAgain })
 		return permission
+	} catch {
+		return "unknown"
+	}
+}
+
+/** The prompt plus the accuracy and services details, for onboarding. Never sends anything. */
+export async function requestAccess(): Promise<LocationAccess> {
+	try {
+		const r = await Location.requestForegroundPermissionsAsync()
+		const access = classifyAccess(r, r.status === "granted" ? await servicesEnabled() : true)
+		useLocationStore.setState({ permission: r.status === "granted" ? "granted" : "denied", canAskAgain: r.canAskAgain, access })
+		return access
+	} catch {
+		useLocationStore.setState({ permission: "denied", access: "denied" })
+		return "denied"
+	}
+}
+
+/** Re-reads the access without prompting (after the rider comes back from Settings). */
+export async function refreshAccess(): Promise<LocationAccess> {
+	try {
+		const r = await Location.getForegroundPermissionsAsync()
+		const access = classifyAccess(r, r.status === "granted" ? await servicesEnabled() : true)
+		const permission: LocationPermission = r.status === "granted" ? "granted" : r.status === "denied" ? "denied" : "unknown"
+		useLocationStore.setState({ permission, canAskAgain: r.canAskAgain, access })
+		return access
 	} catch {
 		return "unknown"
 	}

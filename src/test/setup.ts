@@ -50,6 +50,7 @@ jest.mock("expo-location", () => ({
 	requestForegroundPermissionsAsync: jest.fn(async () => ({ status: "denied", canAskAgain: false })),
 	getCurrentPositionAsync: jest.fn(async () => ({ coords: { latitude: 40.7655, longitude: 29.9408 } })),
 	getLastKnownPositionAsync: jest.fn(async () => null),
+	hasServicesEnabledAsync: jest.fn(async () => true),
 }))
 
 jest.mock("@react-native-community/netinfo", () => ({
