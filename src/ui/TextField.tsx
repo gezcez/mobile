@@ -14,10 +14,16 @@ export function TextField({ label, hint, error, style, ref, ...rest }: TextField
 	const t = useTheme()
 	return (
 		<View style={styles.wrap}>
-			{label ? <Text variant="caption" color="inkMuted">{label}</Text> : null}
+			{label ? (
+				// The input carries the label for screen readers; this caption is visual only.
+				<Text variant="caption" color="inkMuted" accessibilityElementsHidden importantForAccessibility="no">
+					{label}
+				</Text>
+			) : null}
 			<TextInput
 				ref={ref}
-				accessibilityLabel={label}
+				accessibilityLabel={label ?? rest.accessibilityLabel ?? rest.placeholder}
+				accessibilityState={{ disabled: rest.editable === false }}
 				accessibilityHint={hint}
 				placeholderTextColor={t.colors.inkSubtle}
 				selectionColor={t.colors.accent}
