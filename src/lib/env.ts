@@ -1,0 +1,37 @@
+// env.ts
+// Typed runtime config: per-variant values from app.config.ts `extra`, overridable by EXPO_PUBLIC_*.
+// Validated with zod so a bad build fails at boot, not on the first request.
+
+import Constants from "expo-constants"
+import { z } from "zod"
+
+const EnvSchema = z.object({
+	variant: z.enum(["development", "preview", "production"]),
+	apiUrl: z.url(),
+	oauthUrl: z.url(),
+	oauthClientId: z.enum(["mobile", "mobile-dev"]),
+	scheme: z.string().min(1),
+	appVersion: z.string(),
+	mock: z.boolean(),
+	sentryDsn: z.string().optional(),
+})
+
+export type Env = z.infer<typeof EnvSchema>
+
+function read(): Env {
+	const cfg = Constants.expoConfig
+	const extra = (cfg?.extra ?? {}) as Record<string, unknown>
+	const scheme = Array.isArray(cfg?.scheme) ? cfg.scheme[0] : cfg?.scheme
+	return EnvSchema.parse({
+		variant: extra.variant ?? "development",
+		apiUrl: process.env.EXPO_PUBLIC_API_URL || extra.apiUrl || "https://api-staging.gezcez.com",
+		oauthUrl: process.env.EXPO_PUBLIC_OAUTH_URL || extra.oauthUrl || "https://oauth-staging.gezcez.com",
+		oauthClientId: extra.oauthClientId ?? "mobile-dev",
+		scheme: scheme ?? "gezcez-dev",
+		appVersion: cfg?.version ?? "0.0.0",
+		mock: process.env.EXPO_PUBLIC_MOCK === "1" || process.env.NODE_ENV === "test",
+		sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN || undefined,
+	})
+}
+
+export const env: Env = read()
