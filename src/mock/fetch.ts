@@ -204,6 +204,8 @@ export function createMockFetch(opts: MockOptions = {}): typeof fetch {
 				const body = (await req.json()) as { card_number?: string; month?: string }
 				const number = (body.card_number ?? "").replace(/\s/g, "")
 				if (!/^[0-9]{10,16}$/.test(number)) return fail(400, "VALIDATION_FAILED")
+				// Fixture: numbers starting with 9999 simulate the operator's card system being down.
+				if (number.startsWith("9999")) return fail(503, "PROVIDER_UNAVAILABLE")
 				if (m![2] === "lookup") {
 					const r = wireCardLookup(number, nowMs)
 					return r ? ok(r) : fail(404, "CARD_NOT_FOUND")
