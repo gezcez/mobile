@@ -3,7 +3,9 @@ import { CreditCard, Info, Settings, Shield, Trash2, TrainFront } from "lucide-r
 import { View } from "react-native"
 import { useAuthStatus } from "@/auth/hooks"
 import { AccountSection } from "@/features/account/AccountSection"
-import { capabilityOn, useAppConfig, useCurrentNetworks } from "@/features/network/hooks"
+import { useCardsAvailability } from "@/features/cards/useCardsAvailability"
+import { useCardsStore } from "@/features/cards/useCardsStore"
+import { useCurrentNetworks } from "@/features/network/hooks"
 import { useT } from "@/i18n/useT"
 import { oauthLinks, openInApp } from "@/lib/links"
 import { useTheme } from "@/theme/theme"
@@ -17,8 +19,9 @@ export default function MeScreen() {
 	const theme = useTheme()
 	const status = useAuthStatus()
 	const { networks } = useCurrentNetworks()
-	const config = useAppConfig()
-	const cardsOn = config.data?.killSwitches.cards !== false && networks.some((n) => capabilityOn(n, "card"))
+	const cardsVisible = useCardsAvailability().visible
+	const hasCards = useCardsStore((s) => s.cards.length > 0)
+	const cardsOn = cardsVisible || hasCards
 	const icon = (I: typeof Settings) => <I size={20} color={theme.colors.accent} />
 	return (
 		<Screen title={t("tabs.me")}>

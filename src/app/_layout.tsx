@@ -12,6 +12,7 @@ import { auth } from "@/auth"
 import { usePrefsStore } from "@/features/settings/usePrefsStore"
 import { useTelemetry } from "@/features/settings/useTelemetry"
 import { useAppConfig } from "@/features/network/hooks"
+import { useUpdatePrompts } from "@/features/network/useUpdatePrompts"
 import { i18n } from "@/i18n"
 import { env } from "@/lib/env"
 import { initSentry, wrapRoot } from "@/lib/sentry"
@@ -68,6 +69,7 @@ function RootLayout() {
 function RootStack() {
 	const t = useTheme()
 	useTelemetry()
+	useUpdatePrompts()
 	const onboarded = usePrefsStore((s) => s.onboarded)
 	const config = useAppConfig()
 	const mustUpdate = isBelow(env.appVersion, config.data?.minSupportedVersion)

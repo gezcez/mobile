@@ -59,7 +59,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 	backgroundColor: "#fffbeb",
 	runtimeVersion: { policy: "fingerprint" },
 	updates: {
-		url: process.env.EAS_UPDATE_URL,
+		// EAS Update; channels come from the build profile (eas.json), runtime from the fingerprint.
+		url: process.env.EAS_UPDATE_URL ?? (process.env.EAS_PROJECT_ID ? `https://u.expo.dev/${process.env.EAS_PROJECT_ID}` : undefined),
 		checkAutomatically: "ON_LOAD",
 		fallbackToCacheTimeout: 0,
 	},
@@ -145,6 +146,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 		oauthClientId: v.oauthClientId,
 		apiUrl: process.env.EXPO_PUBLIC_API_URL ?? v.apiUrl,
 		oauthUrl: process.env.EXPO_PUBLIC_OAUTH_URL ?? v.oauthUrl,
+		iosAppStoreId: process.env.IOS_APP_STORE_ID,
+		// `EAS_UPDATE_CRITICAL=1 eas update ...` marks an OTA as critical (src/lib/updates.ts).
+		critical: process.env.EAS_UPDATE_CRITICAL === "1",
 		router: {},
 		eas: { projectId: process.env.EAS_PROJECT_ID },
 	},

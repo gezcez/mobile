@@ -314,6 +314,8 @@ export const mobile = {
 		store: "Open the store",
 		softTitle: "A new version is available",
 		restart: "Restart to update",
+		criticalTitle: "An important fix is ready",
+		current: "This version: {{version}}",
 	},
 	cards: {
 		title: "Cards",

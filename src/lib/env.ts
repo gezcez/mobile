@@ -14,6 +14,9 @@ const EnvSchema = z.object({
 	appVersion: z.string(),
 	mock: z.boolean(),
 	sentryDsn: z.string().optional(),
+	/** Store ids for the force/soft update screens (production listing for every variant). */
+	androidPackage: z.string().min(1),
+	iosAppStoreId: z.string().optional(),
 })
 
 export type Env = z.infer<typeof EnvSchema>
@@ -31,6 +34,8 @@ function read(): Env {
 		appVersion: cfg?.version ?? "0.0.0",
 		mock: process.env.EXPO_PUBLIC_MOCK === "1" || process.env.NODE_ENV === "test",
 		sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN || undefined,
+		androidPackage: "com.gezcez.app",
+		iosAppStoreId: (extra.iosAppStoreId as string | undefined) || undefined,
 	})
 }
 

@@ -316,6 +316,8 @@ export const mobile: Catalog<typeof en> = {
 		store: "Mağazayı aç",
 		softTitle: "Yeni bir sürüm var",
 		restart: "Güncellemek için yeniden başlat",
+		criticalTitle: "Önemli bir düzeltme hazır",
+		current: "Bu sürüm: {{version}}",
 	},
 	cards: {
 		title: "Kartlar",
