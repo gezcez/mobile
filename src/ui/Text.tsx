@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Text as RNText, type TextProps as RNTextProps, type TextStyle } from "react-native"
 import { useTheme } from "@/theme/theme"
 import type { ColorTokens, TypographyVariant } from "@/theme/tokens"
@@ -33,9 +34,13 @@ export function Heading(props: Omit<TextProps, "variant"> & { level?: 1 | 2 | 3 
 	return <Text accessibilityRole="header" variant={variant} {...rest} />
 }
 
-/** Uppercase amber label above a title, the www section pattern ("NEARBY", "SAVED"). */
+/**
+ * Uppercase amber label above a title, the www section pattern ("NEARBY", "SAVED"). Casing follows
+ * the UI language: Turkish rules (i to İ) only in Turkish, so English reads "KOCAELI", not "KOCAELİ".
+ */
 export function Eyebrow({ children, ...rest }: Omit<TextProps, "variant">) {
-	const upper = typeof children === "string" ? children.toLocaleUpperCase("tr") : children
+	const { i18n } = useTranslation()
+	const upper = typeof children === "string" ? children.toLocaleUpperCase(i18n.language === "tr" ? "tr" : "en") : children
 	return (
 		<Text variant="eyebrow" color="eyebrow" {...rest}>
 			{upper}

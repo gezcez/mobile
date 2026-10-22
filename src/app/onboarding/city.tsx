@@ -99,7 +99,8 @@ export default function CityStep() {
 				{showPicker && cities.data ? (
 					<>
 						<Heading level={1}>{t("onboarding.city.pick")}</Heading>
-						{!picking && !detected ? <Text color="inkMuted">{t("onboarding.city.notFound")}</Text> : null}
+						{/* Only after a failed detection: not when the rider chose to pick, nor once they picked. */}
+						{pick !== "1" && !picking && !detected && !chosen ? <Text color="inkMuted">{t("onboarding.city.notFound")}</Text> : null}
 						<CityPicker
 							cities={cities.data}
 							selectedId={chosen?.id ?? null}
