@@ -1,0 +1,18 @@
+appId: com.gezcez.app.dev
+name: save-stop
+---
+- launchApp
+- tapOn: Search
+- tapOn:
+    id: search-input
+- inputText: "Otogar"
+- tapOn: Stops
+- tapOn:
+    text: ".*Otogar.*"
+    index: 0
+- tapOn: Save stop
+- tapOn: Favourites
+- back
+- tapOn: Saved
+- assertVisible: Favourites
+- assertVisible: "1 item"

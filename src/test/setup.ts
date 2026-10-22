@@ -73,3 +73,21 @@ jest.mock("react-native-nitro-modules", () => ({
 	NitroModules: { createHybridObject: jest.fn(), box: jest.fn() },
 	getHybridObjectConstructor: jest.fn(),
 }))
+
+// Reanimated and worklets have no native runtime in Jest.
+// A small stand-in covering what the app uses (the package's own mock needs a native runtime too).
+jest.mock("react-native-reanimated", () => {
+	const RN = require("react-native")
+	const Animated = { View: RN.View, Text: RN.Text, createAnimatedComponent: <T>(c: T) => c }
+	return {
+		__esModule: true,
+		default: Animated,
+		...Animated,
+		useSharedValue: <T>(v: T) => ({ value: v }),
+		useAnimatedStyle: (fn: () => object) => fn(),
+		withTiming: <T>(v: T) => v,
+		withRepeat: <T>(v: T) => v,
+		cancelAnimation: () => undefined,
+		Easing: { linear: (t: number) => t, inOut: () => (t: number) => t, ease: (t: number) => t },
+	}
+})

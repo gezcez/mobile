@@ -1,0 +1,14 @@
+appId: com.gezcez.app.dev
+name: search-to-route
+tags: [smoke]
+---
+- launchApp
+- tapOn: Search
+- tapOn:
+    id: search-input
+- inputText: "41C"
+- tapOn: 41C
+- extendedWaitUntil:
+    visible: Stops
+    timeout: 15000
+- assertVisible: Timetable
