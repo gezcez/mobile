@@ -67,6 +67,8 @@ export const mobile = {
 		a11ySummary: "Map with {{count}} vehicles",
 		nextStops: "Next stops",
 		zoomIn: "Zoom in to see stops",
+		expoGoTitle: "The map needs the gezcez dev build",
+		expoGoBody: "Expo Go has no map engine. Live lists, stops and routes still work here.",
 	},
 	search: {
 		placeholder: "Line number or stop name",

@@ -1,13 +1,12 @@
-// gezcez://oauth/callback. Normally the auth session returns the URL to the pending promise; this
-// route catches the redirect when the OS delivers it as a deep link instead (Android task restarts).
+// gezcez://oauth/callback (exp://<host>/--/oauth/callback in Expo Go). Normally the auth session
+// returns the URL to the pending promise; this route catches the redirect when the OS delivers it as a deep link instead (Android task restarts).
 // It only ever completes a login this app started (state check in src/auth) and then leaves.
 
 import { router, useLocalSearchParams } from "expo-router"
 import { useEffect } from "react"
 import { ActivityIndicator, View } from "react-native"
-import { auth } from "@/auth"
+import { auth, AUTH_TARGET } from "@/auth"
 import { useT } from "@/i18n/useT"
-import { env } from "@/lib/env"
 import { useTheme } from "@/theme/theme"
 import { Text } from "@/ui/Text"
 
@@ -21,7 +20,7 @@ export default function OAuthCallback() {
 			if (auth.hasPendingLogin()) {
 				const q = new URLSearchParams()
 				for (const k of ["code", "state", "error"] as const) if (params[k]) q.set(k, String(params[k]))
-				await auth.completeFromUrl(`${env.scheme}://oauth/callback?${q.toString()}`)
+				await auth.completeFromUrl(`${AUTH_TARGET.redirectUri}?${q.toString()}`)
 			}
 			if (!done) router.replace("/me")
 		}

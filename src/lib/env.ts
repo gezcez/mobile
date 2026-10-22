@@ -4,6 +4,7 @@
 
 import Constants from "expo-constants"
 import { z } from "zod"
+import { isExpoGo } from "./expoGo"
 
 const EnvSchema = z.object({
 	variant: z.enum(["development", "preview", "production"]),
@@ -21,9 +22,16 @@ const EnvSchema = z.object({
 
 export type Env = z.infer<typeof EnvSchema>
 
+/** Expo Go signs in with mobile-dev, which only exists on staging, so it always uses staging hosts. */
+const EXPO_GO_EXTRA = {
+	apiUrl: "https://api-staging.gezcez.com",
+	oauthUrl: "https://oauth-staging.gezcez.com",
+	oauthClientId: "mobile-dev",
+}
+
 function read(): Env {
 	const cfg = Constants.expoConfig
-	const extra = (cfg?.extra ?? {}) as Record<string, unknown>
+	const extra: Record<string, unknown> = { ...cfg?.extra, ...(isExpoGo(Constants) ? EXPO_GO_EXTRA : {}) }
 	const scheme = Array.isArray(cfg?.scheme) ? cfg.scheme[0] : cfg?.scheme
 	return EnvSchema.parse({
 		variant: extra.variant ?? "development",

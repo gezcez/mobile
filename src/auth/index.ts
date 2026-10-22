@@ -1,11 +1,14 @@
 // index.ts
 // The configured AuthClient for this app (oauth.md 9.7, mobile).
 
+import { makeRedirectUri } from "expo-auth-session"
 import * as SecureStore from "expo-secure-store"
 import { AppState } from "react-native"
 import { currentLanguage } from "@/i18n"
 import { env } from "@/lib/env"
+import { IS_EXPO_GO } from "@/lib/expoGo"
 import { transportFetch } from "@/lib/transport"
+import { selectAuthTarget } from "./redirect"
 import { nativeBrowser } from "./request"
 import { createAuthClient, type AuthBrowser } from "./session"
 import { secureStoreStorage } from "./storage"
@@ -20,13 +23,21 @@ const mockBrowser: AuthBrowser = {
 
 export const AUTH_SCOPES = ["openid", "profile", "email", "offline_access", "transit"]
 
+/** "mobile" or "mobile-dev" (development variant and Expo Go); gezcez*://oauth/callback or exp://. */
+export const AUTH_TARGET = selectAuthTarget({
+	expoGo: IS_EXPO_GO,
+	scheme: env.scheme,
+	clientId: env.oauthClientId,
+	makeRedirectUri,
+})
+
 export const auth = createAuthClient(
 	{
-		clientId: env.oauthClientId, // "mobile", or "mobile-dev" in the development variant
+		clientId: AUTH_TARGET.clientId,
 		issuer: env.apiUrl,
 		authorizeUrl: `${env.oauthUrl}/authorize`,
 		apiBaseUrl: env.apiUrl,
-		redirectUri: `${env.scheme}://oauth/callback`, // gezcez, gezcez-preview or gezcez-dev
+		redirectUri: AUTH_TARGET.redirectUri,
 		scopes: AUTH_SCOPES,
 		refreshMode: "storage",
 		storage: secureStoreStorage(SecureStore),

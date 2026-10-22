@@ -15,8 +15,8 @@ bun install
 cp .env.example .env.local     # optional; EXPO_PUBLIC_MOCK=1 runs without a backend
 ```
 
-MapLibre, MMKV and SecureStore are native modules, so the app needs a **development build**, not
-Expo Go:
+MapLibre, MMKV and SecureStore are native modules, so the full app needs a **development build**
+(Expo Go runs a reduced mode, see [Expo Go](#expo-go)):
 
 ```sh
 APP_VARIANT=development bunx expo run:android   # or run:ios, needs Android Studio / Xcode
@@ -53,9 +53,36 @@ publishes some nullable top-level fields as arrays; `src/api/types.ts` maps both
 
 ## Expo Go
 
-Expo Go can open the JS but not the screens that matter: it lacks the MapLibre native module
-(map, route and group maps), and MMKV (persisted stores and the query cache). SecureStore works
-there but the OAuth redirect scheme does not. Use a development build for anything real.
+```sh
+bun run start:go        # APP_VARIANT=development expo start --go, scan the QR code with Expo Go
+bun run start:mock      # also works in Expo Go: mock data, demo sign-in, no backend
+```
+
+Expo Go has no MapLibre and no MMKV (Nitro), and it cannot open our `gezcez*://` schemes. The app
+detects it (`Constants.executionEnvironment === "storeClient"`, `src/lib/expoGo.ts`) and degrades
+instead of crashing:
+
+| | Dev / store build | Expo Go |
+|---|---|---|
+| Storage (`src/lib/storage.ts`) | MMKV | Map in memory (`src/lib/kv.ts`); the default instance writes through to AsyncStorage, so prefs, city, favourites and recent searches survive a reload. The query cache and card numbers stay in memory only. |
+| Maps (`src/features/map/TransitMap.tsx`, `layers.tsx`) | MapLibre | A placeholder card; layers render nothing. MapLibre is never loaded. Sheets, lists and departures still work. |
+| Sign-in (`src/auth/redirect.ts`) | variant client, `<scheme>://oauth/callback` | always `mobile-dev`, redirect from `makeRedirectUri()`: `exp://<lan-ip>:8081/--/oauth/callback` |
+| API / OAuth hosts (`src/lib/env.ts`) | per variant | staging (where `mobile-dev` exists), unless `EXPO_PUBLIC_API_URL` / `EXPO_PUBLIC_OAUTH_URL` are set |
+
+Real sign-in from Expo Go needs the backend to accept the `exp://` redirect for `mobile-dev`. The
+backend matches redirect URIs exactly (loopback `http://` ports are the only exception), and the
+LAN IP in the Expo Go URI changes per machine and network, so the backend needs both:
+
+1. `src/db/seed.ts`, `mobile-dev` client: add `"exp://127.0.0.1:8081/--/oauth/callback"` to
+   `redirect_uris` (the redirect URI rules already accept custom schemes for native clients).
+2. `src/services/oauth/oauth.utils.ts`, `matchRedirectUri`: for `dev` apps, let an `exp://` URI
+   match a registered `exp://` URI with the same path whatever its host and port (the way loopback
+   ports are matched today), so `exp://192.168.1.20:8081/--/oauth/callback` and tunnel hosts like
+   `exp://abc-anonymous-8081.exp.direct/--/oauth/callback` are accepted.
+
+Until then, sign-in from Expo Go stops at the authorize page with an invalid redirect URI error;
+use `start:mock` or a development build. Anything else real (maps, encrypted card numbers,
+release checks) needs the development build.
 
 ## Mock mode
 

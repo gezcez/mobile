@@ -69,6 +69,8 @@ export const mobile: Catalog<typeof en> = {
 		a11ySummary: "{{count}} aracın olduğu harita",
 		nextStops: "Sonraki duraklar",
 		zoomIn: "Durakları görmek için yakınlaştırın",
+		expoGoTitle: "Harita için gezcez geliştirici sürümü gerekiyor",
+		expoGoBody: "Expo Go'da harita motoru yok. Canlı listeler, duraklar ve hatlar burada da çalışıyor.",
 	},
 	search: {
 		placeholder: "Hat numarası veya durak adı",
