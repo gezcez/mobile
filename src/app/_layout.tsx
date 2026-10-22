@@ -94,7 +94,6 @@ function RootStack() {
 				<Stack.Screen name="vehicle/[networkId]/[vehicleId]" options={sheet} />
 				<Stack.Screen name="group-edit" options={{ presentation: "modal" }} />
 				<Stack.Screen name="group-map/[groupId]" />
-				<Stack.Screen name="card-add" options={{ presentation: "modal" }} />
 			</Stack.Protected>
 			<Stack.Screen name="oauth/callback" />
 		</Stack>

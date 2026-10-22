@@ -12,13 +12,16 @@ import { Divider, ListRow } from "@/ui/ListRow"
 import { Screen } from "@/ui/Screen"
 import { SectionHeader } from "@/ui/SectionHeader"
 
+const CARDS_BUILT = false
+
 export default function MeScreen() {
 	const { t } = useT()
 	const theme = useTheme()
 	const status = useAuthStatus()
 	const { networks } = useCurrentNetworks()
 	const config = useAppConfig()
-	const cardsOn = config.data?.killSwitches.cards !== false && networks.some((n) => capabilityOn(n, "card"))
+	// Cards (plan M5) are not built yet: the row stays hidden until src/app/me/cards exists.
+	const cardsOn = CARDS_BUILT && config.data?.killSwitches.cards !== false && networks.some((n) => capabilityOn(n, "card"))
 	const icon = (I: typeof Settings) => <I size={20} color={theme.colors.accent} />
 	return (
 		<Screen title={t("tabs.me")}>
