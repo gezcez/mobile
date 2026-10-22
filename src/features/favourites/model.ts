@@ -3,7 +3,7 @@
 // groups of items (stops and routes, any network), plus tombstones for deletes so sync can tell a
 // delete from "never seen".
 
-import type { ManualSchemas as W } from "@/api/schema.manual"
+import type { W } from "@/api/wire"
 import type { GroupColor } from "@/theme/tokens"
 
 export type FavKind = "stop" | "route"
@@ -50,11 +50,11 @@ export const fromWireDoc = (d: W["FavouritesDoc"]): FavDoc & { version: number }
 		name: g.name,
 		colour: g.colour,
 		position: g.position,
-		updatedAt: g.updated_at ?? d.updated_at,
+		updatedAt: g.updated_at ?? d.updated_at ?? new Date(0).toISOString(),
 		items: g.items.map((i) => ({
 			id: i.id,
 			kind: i.kind,
-			networkId: i.network_id,
+			networkId: String(i.network_id),
 			refId: i.ref_id,
 			label: i.label,
 			...(i.direction !== undefined ? { direction: i.direction } : {}),

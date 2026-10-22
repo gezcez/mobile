@@ -4,9 +4,8 @@
 // items into the account (unionOnSignIn). Runs on sign-in, on local change (debounced), on
 // foreground and when the device comes back online. Signed out, nothing leaves the device.
 //
-// MANUAL ENDPOINT: /v1/me/favourites is not in openapi.json yet (typed in schema.manual.ts).
 
-import type { ManualSchemas as W } from "@/api/schema.manual"
+import type { W } from "@/api/wire"
 import { mergeDocs, unionOnSignIn } from "./merge"
 import { fromWireDoc, toWireDoc, type FavDoc } from "./model"
 import { useFavouritesStore } from "./useFavouritesStore"

@@ -1,4 +1,4 @@
-import type { ManualSchemas as W } from "@/api/schema.manual"
+import type { W } from "@/api/wire"
 import { resetSyncState, syncFavourites, type SyncTransport } from "./sync"
 import { useFavouritesStore } from "./useFavouritesStore"
 

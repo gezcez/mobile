@@ -476,6 +476,146 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v1/dash/apps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** OAuth clients with usage counts; sort name, created_at, tokens_24h */
+        get: operations["Apps_list"];
+        put?: never;
+        /** Create a client; a confidential client's secret is shown once */
+        post: operations["Apps_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/apps/{appId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Client detail, secret metadata and tokens issued per day */
+        get: operations["Apps_detail"];
+        put?: never;
+        post?: never;
+        /** Delete a client with its grants and tokens (not system apps) */
+        delete: operations["Apps_delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Edit a client
+         * @description redirect_uris and first_party changes additionally need a fresh sign-in (403 AUTH_STEP_UP_REQUIRED).
+         */
+        patch: operations["Apps_update"];
+        trace?: never;
+    };
+    "/v1/dash/apps/{appId}/revoke-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke every refresh family of the client */
+        post: operations["Apps_revokeAll"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/apps/{appId}/secret": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rotate the secret (shown once); the previous one works for the grace */
+        post: operations["Apps_rotate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/apps/{appId}/secret/previous": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** End the previous secret's grace now */
+        delete: operations["Apps_revokePrevious"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ArchiveAdmin_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/archive/{bindingId}/{date}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ArchiveAdmin_export"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Audit log, newest first; before/after redacted */
+        get: operations["Audit_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/dash/cities": {
         parameters: {
             query?: never;
@@ -484,6 +624,23 @@ export type paths = {
             cookie?: never;
         };
         get: operations["Networks_cities"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/moderation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Moderation log, newest first; `active=true` lists bans in force */
+        get: operations["Moderation_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -516,6 +673,71 @@ export type paths = {
             cookie?: never;
         };
         get: operations["Networks_network"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/networks/{networkId}/analytics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Analytics_catalog"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/networks/{networkId}/analytics/{metric}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Analytics_metric"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/networks/{networkId}/analytics/{metric}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Analytics_export"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/networks/{networkId}/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Audit entries of one network */
+        get: operations["Audit_network"];
         put?: never;
         post?: never;
         delete?: never;
@@ -620,6 +842,77 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v1/dash/networks/{networkId}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Users holding a role in the network, emails masked
+         * @description Filter `role` (key); sort display_name, level (default desc), last_active_at.
+         */
+        get: operations["Members_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/networks/{networkId}/members/{userId}/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Grant or revoke network roles in a batch; level rules per operation */
+        post: operations["Members_assign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/networks/{networkId}/members/assignable-roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Roles strictly below your level in this network */
+        get: operations["Members_assignable"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/networks/{networkId}/members/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Users to add: username or name prefix (2+ characters); exact email with users.pii.read */
+        get: operations["Members_candidates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/dash/networks/{networkId}/sync-runs": {
         parameters: {
             query?: never;
@@ -659,8 +952,42 @@ export type paths = {
             path?: never;
             cookie?: never;
         };
-        /** Permission keys (from code) and the guarded route registry */
-        get: operations["Roles_list"];
+        /** Permission keys from code with scope, sudo and description */
+        get: operations["Roles_permissions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/permissions/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a key that is no longer in code (409 otherwise) */
+        delete: operations["Roles_deletePermission"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/permissions/registry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every stored key with its routes, holders and orphan flag */
+        get: operations["Roles_registry"];
         put?: never;
         post?: never;
         delete?: never;
@@ -717,6 +1044,272 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v1/dash/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Roles with permission and member counts */
+        get: operations["Roles_list"];
+        put?: never;
+        /** Create a role (no permissions yet); its level must be below yours */
+        post: operations["Roles_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/roles/{roleId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Role detail with its permissions and members per network */
+        get: operations["Roles_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit a role's name, description or level (not immutable roles) */
+        patch: operations["Roles_update"];
+        trace?: never;
+    };
+    "/v1/dash/roles/{roleId}/permissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Replace a role's permissions (only keys you hold can be added) */
+        put: operations["Roles_replacePermissions"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/roles/permission-matrix": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Roles x permissions */
+        get: operations["Roles_matrix"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/roles/permissions:batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Matrix editor batch: grant or revoke (role, permission) pairs, a result each */
+        post: operations["Roles_batch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * User search
+         * @description `q` matches the display name, a username prefix or a public id; with users.pii.read also an email prefix. Sort: created_at, display_name, last_active_at.
+         */
+        get: operations["DashUsers_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/users/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** User detail with roles everywhere and the active ban */
+        get: operations["DashUsers_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/users/{userId}/activity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Audit entries where the user is the actor or the target */
+        get: operations["DashUsers_activity"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/users/{userId}/ban": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ban a user
+         * @description Sets the user banned, ends every session and refresh family immediately and writes the moderation log.
+         */
+        post: operations["Moderation_ban"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/users/{userId}/reveal-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Unmasked email of one user; writes an audit row */
+        post: operations["DashUsers_revealEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/users/{userId}/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Grant or revoke global roles in a batch
+         * @description Level rules apply per operation: your level must be above the role's and the user's, and nobody edits themselves.
+         */
+        post: operations["DashUsers_assignRoles"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/users/{userId}/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Live SSO sessions (sso_*) and refresh families per app (rf_*) */
+        get: operations["DashUsers_sessions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/users/{userId}/sessions/{sessionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Revoke one session (and the refresh families issued under it) or one family */
+        delete: operations["DashUsers_revokeSession"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/users/{userId}/sessions/revoke-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke every session and refresh family of the user */
+        post: operations["DashUsers_revokeAll"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/users/{userId}/unban": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Lift a ban */
+        post: operations["Moderation_unban"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/me": {
         parameters: {
             query?: never;
@@ -735,6 +1328,24 @@ export type paths = {
         patch: operations["Users_update"];
         trace?: never;
     };
+    "/v1/me/favourites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The favourites document, with ETag "<version>" */
+        get: operations["Favourites_get"];
+        /** Replace the favourites document; 412 VERSION_CONFLICT when If-Match is stale */
+        put: operations["Favourites_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/networks/{networkId}": {
         parameters: {
             query?: never;
@@ -743,6 +1354,38 @@ export type paths = {
             cookie?: never;
         };
         get: operations["Cities_network"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/networks/{networkId}/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Transit_networkAlerts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/networks/{networkId}/pack": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Pack_pack"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1118,6 +1761,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v1/telemetry/counters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a day's aggregate app counters (no identifiers) */
+        post: operations["Telemetry_counters"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/vehicles/{vehicleId}": {
         parameters: {
             query?: never;
@@ -1149,6 +1809,18 @@ export type components = {
                 locale: "tr" | "en";
             };
         };
+        AlertDto: {
+            active_from: string;
+            active_to: string[];
+            body: string;
+            id: string;
+            network_id: number;
+            route_ids: string[];
+            /** @enum {string} */
+            severity: "info" | "warning" | "severe";
+            title: string;
+            url: string[];
+        };
         ApiError: {
             code: components["schemas"]["ErrorCode"];
             details?: {
@@ -1156,6 +1828,33 @@ export type components = {
             };
             message: string;
             request_id: string;
+        };
+        AppDetail: {
+            access_ttl_s: number;
+            active_families: number;
+            client_id: string;
+            /** Format: date-time */
+            created_at: string;
+            description: string;
+            first_party: boolean;
+            homepage_url: string | null;
+            logo_url: string | null;
+            name: string;
+            platform: components["schemas"]["AppPlatform"];
+            redirect_uris: string[];
+            refresh_max_s: number;
+            refresh_ttl_s: number;
+            scopes: string[];
+            secrets: components["schemas"]["AppSecret"][];
+            system: boolean;
+            tokens_24h: number;
+            type: components["schemas"]["AppType"];
+            /** Format: date-time */
+            updated_at: string;
+            usage: {
+                date: string;
+                tokens: number;
+            }[];
         };
         AppInfoDto: {
             client_id: string;
@@ -1169,6 +1868,102 @@ export type components = {
             }[];
             /** @enum {string} */
             type: "public" | "confidential";
+        };
+        AppListItem: {
+            active_families: number;
+            client_id: string;
+            /** Format: date-time */
+            created_at: string;
+            first_party: boolean;
+            name: string;
+            platform: components["schemas"]["AppPlatform"];
+            redirect_uri_count: number;
+            system: boolean;
+            tokens_24h: number;
+            type: components["schemas"]["AppType"];
+        };
+        AppPageDto: {
+            items: components["schemas"]["AppListItem"][];
+            next_cursor: string | null;
+            prev_cursor: string | null;
+            total: number | null;
+        };
+        /** @enum {string} */
+        AppPlatform: "web" | "native" | "dev";
+        AppReasonDto: {
+            reason: string;
+        };
+        AppSecret: {
+            /** Format: date-time */
+            created_at: string;
+            expires_at: string | null;
+            id: string;
+            last_used_at: string | null;
+            prefix: string;
+            /** @enum {string} */
+            state: "current" | "previous";
+        };
+        /** @enum {string} */
+        AppType: "public" | "confidential";
+        ArchiveStatusDto: {
+            can_write: boolean;
+            entries: {
+                binding_id: number;
+                bytes: number;
+                /** @enum {string} */
+                dataset: "positions" | "trip_runs" | "polls";
+                date: string;
+                exported_at: string;
+                path: string;
+                rows: number;
+                sha256: string;
+                /** @enum {string} */
+                state: "failed" | "verified" | "uploaded";
+                uploaded_at: string | null;
+                verified_at: string | null;
+            }[];
+            last_run: {
+                days: number;
+                failures: number;
+                finished_at: string;
+                pruned: number;
+                started_at: string;
+                uploads_retried: number;
+            } | null;
+            schedules: {
+                /** @enum {string} */
+                key: "archive.export" | "analytics.aggregates";
+                next_run_at: string | null;
+            }[];
+            /** @enum {string} */
+            uploader: "none" | "local" | "s3";
+        };
+        AuditEntry: {
+            action: string;
+            actor: components["schemas"]["UserRef"] | null;
+            after: {
+                [key: string]: unknown;
+            } | null;
+            /** Format: date-time */
+            at: string;
+            before: {
+                [key: string]: unknown;
+            } | null;
+            id: string;
+            ip_prefix: string | null;
+            network_id: number | null;
+            request_id: string | null;
+            /** @enum {string} */
+            severity: "info" | "warn" | "critical";
+            target_id: string | null;
+            target_label: string | null;
+            target_type: string | null;
+        };
+        AuditPageDto: {
+            items: components["schemas"]["AuditEntry"][];
+            next_cursor: string | null;
+            prev_cursor: string | null;
+            total: number | null;
         };
         AuthorizeContinueDto: {
             session_id?: string;
@@ -1217,12 +2012,26 @@ export type components = {
             next: "redirect" | "login" | "reauth" | "choose_account" | "consent";
             prompt?: string;
             redirect_to?: string;
-            request_id: string[];
+            request_id: string | null;
             scopes: {
                 i18n_key: string;
                 key: string;
             }[];
             ui_locales?: string;
+        };
+        Ban: {
+            /** Format: date-time */
+            created_at: string;
+            created_by: components["schemas"]["UserRef"] | null;
+            private_reason: string | null;
+            public_reason: string;
+            until: string | null;
+        };
+        BanRequestDto: {
+            /** @enum {string} */
+            duration: "1d" | "7d" | "30d" | "permanent";
+            private_reason?: string;
+            public_reason: string;
         };
         BindingStatsDto: {
             binding_id: number;
@@ -1397,6 +2206,27 @@ export type components = {
                 subscribers: number;
                 url_variant: ("primary" | "fallback") | null;
             } | null;
+        };
+        CreateAppDto: {
+            /** @default  */
+            description: string;
+            /** @default null */
+            homepage_url: string | null;
+            name: string;
+            platform: components["schemas"]["AppPlatform"];
+            redirect_uris: string[];
+            type: components["schemas"]["AppType"];
+        };
+        CreatedAppDto: {
+            app: components["schemas"]["AppDetail"];
+            secret: string | null;
+        };
+        CreateRoleDto: {
+            /** @default  */
+            description: string;
+            key: string;
+            level: number;
+            name: string;
         };
         CsrfDto: {
             token: string;
@@ -1643,6 +2473,61 @@ export type components = {
             replayed: boolean;
             url: string[];
         };
+        DashUser: {
+            ban: components["schemas"]["Ban"] | null;
+            /** Format: date-time */
+            created_at: string;
+            display_name: string;
+            email_masked: string;
+            email_verified: boolean;
+            id: string;
+            last_active_at: string | null;
+            /** @enum {string} */
+            locale: "tr" | "en";
+            methods: {
+                email_code: boolean;
+                passkeys: number;
+                password: boolean;
+            };
+            roles: components["schemas"]["RoleAssignment"][];
+            status: components["schemas"]["UserStatus"];
+            username: string | null;
+        };
+        DashUserListItem: {
+            /** Format: date-time */
+            created_at: string;
+            display_name: string;
+            email_masked: string;
+            id: string;
+            last_active_at: string | null;
+            role_count: number;
+            status: components["schemas"]["UserStatus"];
+            username: string | null;
+        };
+        DashUserPageDto: {
+            items: components["schemas"]["DashUserListItem"][];
+            next_cursor: string | null;
+            prev_cursor: string | null;
+            total: number | null;
+        };
+        DayExportDto: {
+            binding_id: number;
+            datasets: {
+                bytes: number;
+                /** @enum {string} */
+                dataset: "positions" | "trip_runs" | "polls";
+                error: string | null;
+                rows: number;
+                sha256: string | null;
+                uploaded: boolean;
+                verified: boolean;
+            }[];
+            date: string;
+            skipped: boolean;
+        };
+        DeletedDto: {
+            deleted: boolean;
+        };
         DeparturesDto: {
             generated_at: string;
             items: {
@@ -1772,6 +2657,40 @@ export type components = {
             /** @enum {boolean} */
             ok: false;
         };
+        FavouritesDocDto: {
+            groups: {
+                /** @enum {string} */
+                colour: "amber" | "navy" | "teal" | "rose" | "violet" | "green" | "orange" | "slate";
+                id: string;
+                items: {
+                    /** Format: date-time */
+                    added_at: string;
+                    direction?: 0 | 1;
+                    id: string;
+                    /** @enum {string} */
+                    kind: "stop" | "route";
+                    label: string;
+                    /** @description Network slug (returned) or numeric id (accepted) */
+                    network_id: string | number;
+                    /** @description Stable public stop or route id */
+                    ref_id: string;
+                    /** Format: date-time */
+                    updated_at?: string;
+                }[];
+                name: string;
+                position: number;
+                /** Format: date-time */
+                updated_at?: string;
+            }[];
+            /** @description Deletes from the last 30 days */
+            tombstones: {
+                /** Format: date-time */
+                deleted_at: string;
+                id: string;
+            }[];
+            updated_at: string | null;
+            version: number;
+        };
         HealthDto: {
             /** @constant */
             status: "ok";
@@ -1835,12 +2754,7 @@ export type components = {
             auth_time: number;
             global: {
                 permissions: components["schemas"]["PermissionKey"][];
-                roles: {
-                    id: number;
-                    key: string;
-                    level: number;
-                    name: string;
-                }[];
+                roles: components["schemas"]["RoleRef"][];
             };
             networks: {
                 city: {
@@ -1851,12 +2765,7 @@ export type components = {
                 id: number;
                 name: string;
                 permissions: components["schemas"]["PermissionKey"][];
-                roles: {
-                    id: number;
-                    key: string;
-                    level: number;
-                    name: string;
-                }[];
+                roles: components["schemas"]["RoleRef"][];
                 slug: string;
             }[];
             user: {
@@ -1868,6 +2777,73 @@ export type components = {
                 locale: "tr" | "en";
                 username: string | null;
             };
+        };
+        Member: {
+            email_masked: string;
+            last_active_at: string | null;
+            roles: {
+                /** Format: date-time */
+                granted_at: string;
+                granted_by: components["schemas"]["UserRef"] | null;
+                role: components["schemas"]["RoleRef"];
+            }[];
+            user: components["schemas"]["UserRef"];
+        };
+        MemberPageDto: {
+            items: components["schemas"]["Member"][];
+            next_cursor: string | null;
+            prev_cursor: string | null;
+            total: number | null;
+        };
+        MetricCatalogDto: {
+            archive: {
+                first_date: string | null;
+                last_date: string | null;
+            };
+            /** @enum {string} */
+            h3: "extension" | "js";
+            max_days: number;
+            metrics: {
+                datasets: string[];
+                description: string;
+                /** @enum {string} */
+                key: "fleet.hourly" | "fleet.vehicle-days" | "runs.runtime" | "runs.departures" | "headways.observed" | "adherence.departure" | "speed.heatmap" | "segments.travel-time" | "dwell.stops" | "quality.feed" | "coverage.routes" | "headways.marey";
+            }[];
+        };
+        MetricResultDto: {
+            columns: string[];
+            meta: {
+                binding_ids: number[];
+                from: string;
+                generated_at: string;
+                /** @enum {string} */
+                metric: "fleet.hourly" | "fleet.vehicle-days" | "runs.runtime" | "runs.departures" | "headways.observed" | "adherence.departure" | "speed.heatmap" | "segments.travel-time" | "dwell.stops" | "quality.feed" | "coverage.routes" | "headways.marey";
+                n: number;
+                /** @enum {string} */
+                source: "hot" | "archive" | "rollup";
+                timezone: string;
+                to: string;
+            };
+            rows: (number | string | boolean | null)[][];
+        };
+        ModerationAction: {
+            /** @enum {string} */
+            action: "ban" | "unban" | "warn" | "note";
+            active: boolean;
+            /** Format: date-time */
+            at: string;
+            by: components["schemas"]["UserRef"] | null;
+            id: string;
+            private_reason: string | null;
+            public_reason: string | null;
+            until: string | null;
+            user: components["schemas"]["UserRef"];
+        };
+        ModerationPageDto: {
+            items: components["schemas"]["ModerationAction"][];
+            next_cursor: string | null;
+            prev_cursor: string | null;
+            total: number | null;
         };
         NearbyDto: {
             items: {
@@ -1940,6 +2916,11 @@ export type components = {
             status: "active" | "degraded" | "disabled";
             status_message: string[];
         };
+        NetworkRef: {
+            id: number;
+            name: string;
+            slug: string;
+        };
         OAuthErrorDto: {
             error: string;
             error_description?: string;
@@ -1964,6 +2945,38 @@ export type components = {
             ui_locales_supported: string[];
             userinfo_endpoint: string;
         };
+        PackDto: {
+            built_at: string;
+            /** @description Network slug */
+            network: string;
+            network_id: number;
+            /** @description Same value as the manifest's pack_version */
+            pack_version: string;
+            routes: {
+                colour: string | null;
+                directions: {
+                    direction: 0 | 1;
+                    headsign: string;
+                    /** @description Ordered stops of the main pattern */
+                    stop_ids: string[];
+                }[];
+                id: string;
+                long_name: string;
+                /** @enum {string} */
+                mode: "tram" | "metro" | "rail" | "bus" | "ferry" | "cable_tram" | "aerial_lift" | "funicular" | "trolleybus" | "monorail";
+                short_name: string;
+                text_colour: string | null;
+            }[];
+            stops: {
+                code: string | null;
+                id: string;
+                lat: number;
+                lon: number;
+                modes: ("tram" | "metro" | "rail" | "bus" | "ferry" | "cable_tram" | "aerial_lift" | "funicular" | "trolleybus" | "monorail")[];
+                name: string;
+                route_ids: string[];
+            }[];
+        };
         PasswordLoginDto: {
             /** Format: email */
             email: string;
@@ -1985,26 +2998,58 @@ export type components = {
             /** @enum {string} */
             locale?: "tr" | "en";
         };
+        PermissionBatchDto: {
+            operations: {
+                /** @enum {string} */
+                op: "grant" | "revoke";
+                permission_key: components["schemas"]["PermissionKey"];
+                role_id: number;
+            }[];
+        };
+        PermissionBatchResultDto: {
+            results: {
+                error_code: components["schemas"]["ErrorCode"] | null;
+                ok: boolean;
+                /** @enum {string} */
+                op: "grant" | "revoke";
+                permission_key: components["schemas"]["PermissionKey"];
+                role_id: number;
+            }[];
+        };
+        PermissionInfo: {
+            description: string;
+            key: components["schemas"]["PermissionKey"];
+            /** @enum {string} */
+            scope: "global" | "network";
+            sudo: boolean;
+        };
         /** @enum {string} */
         PermissionKey: "system.health.read" | "system.config.read" | "ops.logs" | "users.read" | "users.pii.read" | "users.sessions.revoke" | "moderation.read" | "moderation.write" | "roles.read" | "roles.write" | "roles.assign" | "permissions.read" | "permissions.write" | "apps.read" | "apps.write" | "apps.secrets.rotate" | "networks.read.all" | "catalog.admin" | "providers.read" | "providers.kill" | "archive.read" | "archive.write" | "email.read" | "email.test.send" | "email.test.send.any" | "settings.read" | "settings.write" | "flags.write" | "jobs.read" | "jobs.run" | "audit.read" | "network.overview.read" | "vehicles.live.read" | "vehicles.history.read" | "tracker.read" | "tracker.control" | "tracker.config.write" | "catalog.read" | "catalog.write" | "catalog.sync" | "analytics.read" | "analytics.export" | "members.read" | "members.roles.write" | "support.read" | "support.reply";
-        PermissionListDto: {
-            keys: {
-                description: string;
-                key: string;
-                orphaned: boolean;
-                /** @enum {string} */
-                scope: "global" | "network";
-                sudo: boolean;
+        PermissionMatrixDto: {
+            grants: {
+                permissions: components["schemas"]["PermissionKey"][];
+                role_id: number;
             }[];
+            permissions: components["schemas"]["PermissionInfo"][];
+            roles: components["schemas"]["Role"][];
+        };
+        PermissionRegistryEntry: {
+            description: string;
+            /** Format: date-time */
+            first_registered_at: string;
+            key: string;
+            /** Format: date-time */
+            last_seen_at: string;
+            orphaned_at: string | null;
+            roles: components["schemas"]["RoleRef"][];
             routes: {
-                description: string;
                 method: string;
                 path: string;
-                permission_key: string;
-                /** @enum {string} */
-                scope: "global" | "network";
                 sudo: boolean;
             }[];
+            /** @enum {string} */
+            scope: "global" | "network";
+            sudo: boolean;
         };
         PollPageDto: {
             items: {
@@ -2075,6 +3120,40 @@ export type components = {
             }[];
             url: string[];
         };
+        PutFavouritesDto: {
+            groups: {
+                /** @enum {string} */
+                colour: "amber" | "navy" | "teal" | "rose" | "violet" | "green" | "orange" | "slate";
+                id: string;
+                items: {
+                    /** Format: date-time */
+                    added_at: string;
+                    direction?: 0 | 1;
+                    id: string;
+                    /** @enum {string} */
+                    kind: "stop" | "route";
+                    label: string;
+                    /** @description Network slug (returned) or numeric id (accepted) */
+                    network_id: string | number;
+                    /** @description Stable public stop or route id */
+                    ref_id: string;
+                    /** Format: date-time */
+                    updated_at?: string;
+                }[];
+                name: string;
+                position: number;
+                /** Format: date-time */
+                updated_at?: string;
+            }[];
+            /** @default [] */
+            tombstones: {
+                /** Format: date-time */
+                deleted_at: string;
+                id: string;
+            }[];
+            updated_at?: string | null;
+            version?: number;
+        };
         ReadyDto: {
             checks: {
                 name: string;
@@ -2082,8 +3161,18 @@ export type components = {
             }[];
             ready: boolean;
         };
+        ReasonDto: {
+            reason: string;
+        };
         ReauthDto: {
             password: string;
+        };
+        ReplacePermissionsDto: {
+            permissions: components["schemas"]["PermissionKey"][];
+        };
+        RevealEmailDto: {
+            /** Format: email */
+            email: string;
         };
         RevokedCountDto: {
             revoked: number;
@@ -2093,6 +3182,72 @@ export type components = {
             client_secret?: string;
             token?: string;
             token_type_hint?: string;
+        };
+        Role: {
+            description: string;
+            id: number;
+            immutable: boolean;
+            key: string;
+            level: number;
+            member_count: number;
+            name: string;
+            permission_count: number;
+        };
+        RoleAssignment: {
+            /** Format: date-time */
+            granted_at: string;
+            granted_by: components["schemas"]["UserRef"] | null;
+            network: components["schemas"]["NetworkRef"] | null;
+            role: components["schemas"]["RoleRef"];
+        };
+        RoleDetail: {
+            /** Format: date-time */
+            created_at: string;
+            description: string;
+            id: number;
+            immutable: boolean;
+            key: string;
+            level: number;
+            member_count: number;
+            members_by_network: {
+                count: number;
+                network: components["schemas"]["NetworkRef"] | null;
+            }[];
+            name: string;
+            permission_count: number;
+            permissions: components["schemas"]["PermissionKey"][];
+            /** Format: date-time */
+            updated_at: string;
+        };
+        RoleOperationResultsDto: {
+            results: {
+                error_code: components["schemas"]["ErrorCode"] | null;
+                ok: boolean;
+                /** @enum {string} */
+                op: "grant" | "revoke";
+                role_id: number;
+            }[];
+        };
+        RoleOperationsDto: {
+            operations: {
+                /** @enum {string} */
+                op: "grant" | "revoke";
+                role_id: number;
+            }[];
+        };
+        RoleRef: {
+            id: number;
+            key: string;
+            level: number;
+            name: string;
+        };
+        RotatedSecretDto: {
+            meta: components["schemas"]["AppSecret"];
+            secret: string;
+        };
+        RotateSecretDto: {
+            /** @enum {string} */
+            grace: "none" | "24h" | "7d";
         };
         RouteDetailDto: {
             agency: string[];
@@ -2183,6 +3338,9 @@ export type components = {
                 name: string;
                 network_id: number;
             }[];
+        };
+        SecretRevokedDto: {
+            revoked: boolean;
         };
         SecurityDto: {
             has_password: boolean;
@@ -2340,6 +3498,24 @@ export type components = {
             prev_cursor: string[];
             total: number | null;
         };
+        TelemetryAcceptedDto: {
+            accepted: boolean;
+        };
+        TelemetryCountersDto: {
+            app_version: string;
+            /** @description City slug, or null before one is chosen */
+            city: string | null;
+            counters: {
+                [key: string]: number;
+            };
+            /**
+             * Format: date
+             * @description The app's local day, YYYY-MM-DD; within two days of today
+             */
+            day: string;
+            /** @enum {string} */
+            platform: "ios" | "android";
+        };
         TimetableDto: {
             date: string[];
             /** @enum {string} */
@@ -2418,6 +3594,52 @@ export type components = {
             runner: "worker" | "inline" | "manual" | "external" | "off";
             running: boolean;
         };
+        UnbanRequestDto: {
+            reason: string;
+        };
+        UnbanResultDto: {
+            unbanned: boolean;
+        };
+        UpdateAppDto: {
+            access_ttl_s?: number;
+            description?: string;
+            first_party?: boolean;
+            homepage_url?: string | null;
+            logo_url?: string | null;
+            name?: string;
+            redirect_uris?: string[];
+            refresh_max_s?: number;
+            refresh_ttl_s?: number;
+            scopes?: string[];
+        };
+        UpdateRoleDto: {
+            description?: string;
+            level?: number;
+            name?: string;
+        };
+        UserRef: {
+            display_name: string;
+            id: string;
+            username: string | null;
+        };
+        UserSession: {
+            app: {
+                client_id: string;
+                name: string;
+            } | null;
+            /** Format: date-time */
+            created_at: string;
+            device: string;
+            /** Format: date-time */
+            expires_at: string;
+            id: string;
+            ip_prefix: string | null;
+            /** @enum {string} */
+            kind: "sso" | "refresh";
+            last_used_at: string | null;
+        };
+        /** @enum {string} */
+        UserStatus: "active" | "unverified" | "banned" | "pending_deletion";
         VehicleDetailDto: {
             accessible: boolean[];
             current_run: {
@@ -2488,13 +3710,155 @@ export type components = {
             vehicles: (string | number | null)[][];
         };
         VersionDto: {
-            build_time: string[];
+            build_time: string | null;
             env: string;
             git_sha: string;
             /** @enum {string} */
             mode: "api" | "tracker" | "all";
             uptime_s: number;
             version: string;
+        };
+        WsClientMessage: {
+            token: string;
+            /** @constant */
+            type: "auth";
+        } | {
+            /** @enum {string} */
+            channel: "vehicles" | "departures" | "tracker.status" | "tracker.logs";
+            id: string;
+            /** @default {} */
+            params: {
+                [key: string]: unknown;
+            };
+            /** @constant */
+            type: "subscribe";
+        } | {
+            id: string;
+            /** @constant */
+            type: "unsubscribe";
+        } | {
+            t?: number;
+            /** @constant */
+            type: "ping";
+        } | {
+            t?: number;
+            /** @constant */
+            type: "pong";
+        };
+        WsDeparturesParams: {
+            /** @default 10 */
+            limit: number;
+            stop: string;
+        };
+        WsServerMessage: {
+            heartbeat_s: number;
+            limits: {
+                max_bbox_span_deg: number;
+                max_routes_per_sub: number;
+                max_subs: number;
+            };
+            /** @constant */
+            type: "hello";
+            /** @constant */
+            v: 1;
+        } | {
+            exp: number;
+            /** @constant */
+            type: "auth_ok";
+        } | {
+            feed_ts: number | null;
+            fields: string[];
+            seq: number;
+            sub: string;
+            /** @constant */
+            type: "snapshot";
+            vehicles: (string | number | null)[][];
+        } | {
+            feed_ts: number | null;
+            remove: string[];
+            seq: number;
+            sub: string;
+            /** @constant */
+            type: "delta";
+            upsert: (string | number | null)[][];
+        } | {
+            generated_at: string;
+            items: {
+                cancelled: boolean;
+                headsign: string | null;
+                predicted_at: string | null;
+                route: {
+                    agency: string | null;
+                    colour: string | null;
+                    /** @description Stable public id, e.g. 1.42041 */
+                    id: string;
+                    long_name: string;
+                    /** @enum {string} */
+                    mode: "tram" | "metro" | "rail" | "bus" | "ferry" | "cable_tram" | "aerial_lift" | "funicular" | "trolleybus" | "monorail";
+                    network_id: number;
+                    route_type: number;
+                    short_name: string;
+                    text_colour: string | null;
+                };
+                scheduled_at: string | null;
+                /** @enum {string} */
+                source: "schedule" | "live" | "live_eta";
+                stops_away: number | null;
+                trip_id: string | null;
+                vehicle_id: string | null;
+            }[];
+            seq: number;
+            stop: string;
+            sub: string;
+            /** @constant */
+            type: "departures";
+        } | {
+            binding: number;
+            message?: string | null;
+            network: number;
+            seq: number;
+            /** @enum {string} */
+            state: "ok" | "degraded" | "down" | "paused" | "killed" | "unknown";
+            sub: string;
+            /** @constant */
+            type: "status";
+        } | {
+            data: unknown;
+            seq: number;
+            sub: string;
+            /** @constant */
+            type: "event";
+        } | {
+            code: string;
+            id?: string;
+            message: string;
+            /** @constant */
+            type: "error";
+        } | {
+            t: number;
+            /** @constant */
+            type: "ping";
+        } | {
+            t?: number;
+            /** @constant */
+            type: "pong";
+        };
+        WsVehiclesParams: {
+            /** @description [west, south, east, north] */
+            bbox?: [
+                number,
+                number,
+                number,
+                number
+            ];
+            /**
+             * @default compact
+             * @enum {string}
+             */
+            detail: "compact" | "full";
+            direction?: 0 | 1;
+            network: string | number;
+            routes?: string[];
         };
     };
     responses: never;
@@ -3645,6 +5009,422 @@ export interface operations {
             };
         };
     };
+    Apps_list: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+                q?: string;
+                sort?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AppPageDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Apps_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAppDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["CreatedAppDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Apps_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AppDetail"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Apps_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["DeletedDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Apps_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAppDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AppDetail"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Apps_revokeAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppReasonDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RevokedCountDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Apps_rotate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RotateSecretDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RotatedSecretDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Apps_revokePrevious: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SecretRevokedDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    ArchiveAdmin_status: {
+        parameters: {
+            query?: {
+                binding_id?: number;
+                from?: string;
+                limit?: number;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ArchiveStatusDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    ArchiveAdmin_export: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bindingId: number;
+                date: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["DayExportDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Audit_list: {
+        parameters: {
+            query?: {
+                action?: string;
+                actor?: string;
+                cursor?: string;
+                from?: string;
+                limit?: number;
+                network_id?: number;
+                q?: string;
+                sort?: string;
+                target_id?: string;
+                target_type?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AuditPageDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     Networks_cities: {
         parameters: {
             query?: never;
@@ -3662,6 +5442,47 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["DashCityDto"][];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Moderation_list: {
+        parameters: {
+            query?: {
+                action?: "ban" | "unban" | "warn" | "note";
+                active?: "true" | "false";
+                cursor?: string;
+                limit?: number;
+                q?: string;
+                sort?: string;
+                user_id?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ModerationPageDto"];
                         /** @enum {boolean} */
                         ok: true;
                     };
@@ -3728,6 +5549,199 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["DashNetworkDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Analytics_catalog: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MetricCatalogDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Analytics_metric: {
+        parameters: {
+            query?: {
+                /** @description One binding of the network */
+                binding_id?: number;
+                /** @description One local day (sets from and to) */
+                date?: string;
+                day_type?: "all" | "weekday" | "saturday" | "sunday";
+                direction?: number;
+                /** @description First local date (default: 6 days before `to`) */
+                from?: string;
+                /** @description fleet.hourly bucket size */
+                granularity?: "5m" | "1h" | "1d";
+                /** @description speed.heatmap: one local hour */
+                hour?: number;
+                hour_from?: number;
+                hour_to?: number;
+                /** @description dwell.stops: top N */
+                limit?: number;
+                /** @description speed.heatmap: minimum samples per cell */
+                min_samples?: number;
+                /** @description runs.runtime: minimum max_stop_seq of a run */
+                min_stops?: number;
+                /** @description speed.heatmap H3 resolution */
+                res?: number;
+                /** @description Route id(s), comma separated: external or public `<binding>.<external>` */
+                route_id?: string;
+                /** @description dwell.stops: one stop, by hour */
+                stop_id?: string;
+                /** @description Last local date, inclusive (default: today) */
+                to?: string;
+            };
+            header?: never;
+            path: {
+                metric: "fleet.hourly" | "fleet.vehicle-days" | "runs.runtime" | "runs.departures" | "headways.observed" | "adherence.departure" | "speed.heatmap" | "segments.travel-time" | "dwell.stops" | "quality.feed" | "coverage.routes" | "headways.marey";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MetricResultDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Analytics_export: {
+        parameters: {
+            query?: {
+                /** @description One binding of the network */
+                binding_id?: number;
+                /** @description One local day (sets from and to) */
+                date?: string;
+                day_type?: "all" | "weekday" | "saturday" | "sunday";
+                direction?: number;
+                format?: "csv" | "parquet";
+                /** @description First local date (default: 6 days before `to`) */
+                from?: string;
+                /** @description fleet.hourly bucket size */
+                granularity?: "5m" | "1h" | "1d";
+                /** @description speed.heatmap: one local hour */
+                hour?: number;
+                hour_from?: number;
+                hour_to?: number;
+                /** @description dwell.stops: top N */
+                limit?: number;
+                /** @description speed.heatmap: minimum samples per cell */
+                min_samples?: number;
+                /** @description runs.runtime: minimum max_stop_seq of a run */
+                min_stops?: number;
+                /** @description speed.heatmap H3 resolution */
+                res?: number;
+                /** @description Route id(s), comma separated: external or public `<binding>.<external>` */
+                route_id?: string;
+                /** @description dwell.stops: one stop, by hour */
+                stop_id?: string;
+                /** @description Last local date, inclusive (default: today) */
+                to?: string;
+            };
+            header?: never;
+            path: {
+                metric: "fleet.hourly" | "fleet.vehicle-days" | "runs.runtime" | "runs.departures" | "headways.observed" | "adherence.departure" | "speed.heatmap" | "segments.travel-time" | "dwell.stops" | "quality.feed" | "coverage.routes" | "headways.marey";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The metric's rows as a file */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    Audit_network: {
+        parameters: {
+            query?: {
+                action?: string;
+                actor?: string;
+                cursor?: string;
+                from?: string;
+                limit?: number;
+                q?: string;
+                sort?: string;
+                target_id?: string;
+                target_type?: string;
+                to?: string;
+            };
+            header?: never;
+            path: {
+                networkId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AuditPageDto"];
                         /** @enum {boolean} */
                         ok: true;
                     };
@@ -3959,6 +5973,159 @@ export interface operations {
             };
         };
     };
+    Members_list: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+                q?: string;
+                role?: string;
+                sort?: string;
+            };
+            header?: never;
+            path: {
+                networkId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MemberPageDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Members_assign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                networkId: string;
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoleOperationsDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RoleOperationResultsDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Members_assignable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                networkId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RoleRef"][];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Members_candidates: {
+        parameters: {
+            query?: {
+                q?: string;
+            };
+            header?: never;
+            path: {
+                networkId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["UserRef"][];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     TransitAdmin_runs: {
         parameters: {
             query?: {
@@ -4028,7 +6195,7 @@ export interface operations {
             };
         };
     };
-    Roles_list: {
+    Roles_permissions: {
         parameters: {
             query?: never;
             header?: never;
@@ -4044,7 +6211,75 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        data: components["schemas"]["PermissionListDto"];
+                        data: components["schemas"]["PermissionInfo"][];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Roles_deletePermission: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["DeletedDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Roles_registry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PermissionRegistryEntry"][];
                         /** @enum {boolean} */
                         ok: true;
                     };
@@ -4168,6 +6403,643 @@ export interface operations {
             };
         };
     };
+    Roles_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["Role"][];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Roles_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateRoleDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["Role"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Roles_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roleId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RoleDetail"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Roles_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roleId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateRoleDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["Role"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Roles_replacePermissions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roleId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplacePermissionsDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RoleDetail"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Roles_matrix: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PermissionMatrixDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Roles_batch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PermissionBatchDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PermissionBatchResultDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    DashUsers_list: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                from?: string;
+                limit?: number;
+                network_id?: number;
+                q?: string;
+                role?: string;
+                sort?: string;
+                status?: components["schemas"]["UserStatus"];
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["DashUserPageDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    DashUsers_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["DashUser"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    DashUsers_activity: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+                q?: string;
+                sort?: string;
+            };
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AuditPageDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Moderation_ban: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BanRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["Ban"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    DashUsers_revealEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RevealEmailDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    DashUsers_assignRoles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoleOperationsDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RoleOperationResultsDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    DashUsers_sessions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["UserSession"][];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    DashUsers_revokeSession: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sessionId: string;
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RevokedCountDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    DashUsers_revokeAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RevokedCountDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Moderation_unban: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnbanRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["UnbanResultDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     Users_me: {
         parameters: {
             query?: never;
@@ -4238,6 +7110,80 @@ export interface operations {
             };
         };
     };
+    Favourites_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["FavouritesDocDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Favourites_put: {
+        parameters: {
+            query?: never;
+            header: {
+                "if-match": string;
+                /** @description The version last read, e.g. "3" */
+                "If-Match": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PutFavouritesDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["FavouritesDocDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     Cities_network: {
         parameters: {
             query?: never;
@@ -4257,6 +7203,78 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["NetworkManifestDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Transit_networkAlerts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                networkId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Active service alerts; an empty list unless the network has the alerts capability */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AlertDto"][];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Pack_pack: {
+        parameters: {
+            query?: never;
+            header?: {
+                "If-None-Match"?: string;
+            };
+            path: {
+                networkId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Offline pack of a network; re-download when the manifest's pack_version changes. Strong ETag, 304 on If-None-Match, gzip when accepted. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PackDto"];
                         /** @enum {boolean} */
                         ok: true;
                     };
@@ -5107,6 +8125,43 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["VersionDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Telemetry_counters: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TelemetryCountersDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["TelemetryAcceptedDto"];
                         /** @enum {boolean} */
                         ok: true;
                     };

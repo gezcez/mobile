@@ -587,8 +587,8 @@ export const toAlert = (a: W["Alert"]): Alert => ({
 	severity: a.severity,
 	routeIds: a.route_ids,
 	activeFrom: a.active_from,
-	activeTo: a.active_to,
-	url: a.url,
+	activeTo: nullable(a.active_to),
+	url: nullable(a.url),
 })
 
 export const toAppConfig = (c: W["AppConfig"]): AppConfig => ({

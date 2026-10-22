@@ -1,7 +1,7 @@
 // data.ts
 // Wire-format (snake_case) responses computed from the mock world, shared by the mock fetch, the
 // mock live feed and tests. Shapes follow src/api/wire.ts: the backend's openapi.json where the
-// endpoint is published, schema.manual.ts where it is not.
+// endpoint is published, schema.manual.ts where it is not (app config, cards).
 
 import polyline from "@mapbox/polyline"
 import type { W } from "@/api/wire"
@@ -173,6 +173,7 @@ export function wirePack(slug: string): W["Pack"] | null {
 	if (!n) return null
 	return {
 		network: n.slug,
+		network_id: networkId(n.slug),
 		pack_version: `mock-${n.slug}-1`,
 		built_at: "2026-10-01T03:00:00.000Z",
 		stops: [...w.stops.values()]
@@ -539,13 +540,14 @@ export function wireAlerts(networkSlug: string, nowMs: number): W["Alert"][] {
 	return [
 		{
 			id: "a1",
+			network_id: networkId(n.slug),
 			title: "Line 120 diverted near Sekapark",
 			body: "Road works on Cumhuriyet Caddesi until Sunday. Buses use the coast road; the Sekapark stop is moved 150 m east.",
 			severity: "warning",
 			route_ids: ["4.41120"],
 			active_from: iso(nowMs - 2 * 86400_000),
-			active_to: iso(nowMs + 3 * 86400_000),
-			url: null,
+			active_to: asSpec<W["Alert"]["active_to"]>(iso(nowMs + 3 * 86400_000)),
+			url: asSpec<W["Alert"]["url"]>(null),
 		},
 	]
 }

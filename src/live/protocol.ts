@@ -1,7 +1,7 @@
 // protocol.ts
-// The realtime WS protocol, version 1 (backend 6.10). MANUAL TYPES: openapi.json does not publish
-// the WsClientMessage / WsServerMessage schemas yet; when it does, these types come from
-// schema.gen.ts and only the decoders below stay (they turn compact rows into objects).
+// The realtime WS protocol, version 1 (backend 6.10). Server frames are typed from openapi.json's
+// WsServerMessage; client frames stay narrower than WsClientMessage (whose subscribe params are an
+// open record) so a subscription is checked per channel. The decoders turn compact rows into objects.
 
 import type { W } from "@/api/wire"
 
@@ -27,16 +27,8 @@ export type ClientMessage =
 
 export type VehicleRow = (string | number | null)[]
 
-export type ServerMessage =
-	| { type: "hello"; v: number; heartbeat_s: number; limits: { max_subs: number; max_routes_per_sub: number; max_bbox_span_deg: number } }
-	| { type: "auth_ok"; exp: number }
-	| { type: "snapshot"; sub: string; seq: number; feed_ts: number | null; fields: string[]; vehicles: VehicleRow[] }
-	| { type: "delta"; sub: string; seq: number; feed_ts: number | null; upsert: VehicleRow[]; remove: string[] }
-	| { type: "departures"; sub: string; seq: number; stop: string; generated_at: string; items: W["Departure"][] }
-	| { type: "status"; sub: string; network: string; binding?: number; state: "ok" | "degraded" | "down" | "paused" | "killed"; message?: string }
-	| { type: "error"; id?: string; code: string; message?: string }
-	| { type: "ping"; t?: number }
-	| { type: "pong"; t?: number }
+/** Server frames, from openapi.json (WsServerMessage). */
+export type ServerMessage = W["WsServerMessage"]
 
 export const LIMITS = { maxSubs: 8, maxRoutesPerSub: 12, maxBboxSpanDeg: 0.5 } as const
 
