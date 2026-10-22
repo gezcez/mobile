@@ -7,6 +7,7 @@ import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 import { last4 } from "@/lib/format"
 import { uuidv7 } from "@/lib/id"
+import { count } from "@/lib/telemetry"
 import { zustandStorage } from "@/lib/storage"
 import type { CardType, LastBalance, SavedCard } from "./model"
 import { clearCardNumbers, deleteCardNumber, saveCardNumber } from "./secrets"
@@ -47,6 +48,7 @@ export const useCardsStore = create<CardsState>()(
 					lastBalance: null,
 				}
 				set({ cards: [...get().cards, card].slice(-MAX_CARDS) })
+				count("feature:card_add")
 				return id
 			},
 			update: (id, patch) =>

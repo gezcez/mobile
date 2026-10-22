@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { cardBalanceQuery, cardHistoryQuery } from "@/api/queries/cards"
 import { errorCodeOf, type ErrorCode } from "@/api/errors"
+import { count } from "@/lib/telemetry"
 import type { SavedCard } from "./model"
 import { readCardNumber } from "./secrets"
 import { useCardsStore } from "./useCardsStore"
@@ -17,15 +18,14 @@ export function useCardBalance(card: SavedCard | undefined, enabled = true) {
 		enabled: !!card && enabled,
 	})
 	const setBalance = useCardsStore((s) => s.setBalance)
+	const cardId = card?.id
+	const data = q.data
+	// Keyed on the query's update time, not the card object, which this very effect replaces.
 	useEffect(() => {
-		if (card && q.data)
-			setBalance(card.id, {
-				amount: q.data.balance,
-				currency: q.data.currency,
-				asOf: q.data.asOf,
-				providerCardType: q.data.cardType,
-			})
-	}, [card, q.data, setBalance])
+		if (!cardId || !data) return
+		count("feature:card_lookup")
+		setBalance(cardId, { amount: data.balance, currency: data.currency, asOf: data.asOf, providerCardType: data.cardType })
+	}, [cardId, data, q.dataUpdatedAt, setBalance])
 	return q
 }
 
