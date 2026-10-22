@@ -56,8 +56,8 @@ export const common = {
 		tomorrowAt: "tomorrow {{time}}",
 	},
 	distance: {
-		m: "{{count}} m",
-		km: "{{count}} km",
+		m: "{{value}} m",
+		km: "{{value}} km",
 		walk: "{{count}} min walk",
 	},
 	modes: {

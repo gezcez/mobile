@@ -58,8 +58,8 @@ export const common: Catalog<typeof en> = {
 		tomorrowAt: "yarın {{time}}",
 	},
 	distance: {
-		m: "{{count}} m",
-		km: "{{count}} km",
+		m: "{{value}} m",
+		km: "{{value}} km",
 		walk: "{{count}} dk yürüme",
 	},
 	modes: {

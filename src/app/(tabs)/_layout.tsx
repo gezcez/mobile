@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router"
+import { Tabs } from "expo-router/js-tabs"
 import { useT } from "@/i18n/useT"
 import { TabBar } from "@/ui/TabBar"
 
