@@ -1,0 +1,36 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main, rewrite]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: bun install --frozen-lockfile
+      - name: typecheck
+        run: bun run typecheck
+      - name: lint
+        run: bun run lint
+      - name: i18n key parity
+        run: bun run i18n:check
+      - name: unit and component tests
+        run: bun run test --ci
+      - name: bundle builds (android export)
+        run: bunx expo export --platform android --output-dir dist
+        env:
+          EXPO_OFFLINE: "1"

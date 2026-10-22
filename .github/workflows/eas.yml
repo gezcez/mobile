@@ -1,0 +1,47 @@
+name: eas
+
+# Merges to main publish an OTA update to the preview channel. Store builds are started by hand.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: EAS build profile
+        type: choice
+        options: [development, preview, production]
+        default: preview
+
+jobs:
+  update-preview:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: bun install --frozen-lockfile
+      - run: eas update --channel preview --message "${{ github.event.head_commit.message }}" --non-interactive
+        env:
+          APP_VARIANT: preview
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+  build:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: bun install --frozen-lockfile
+      - run: eas build --profile ${{ inputs.profile }} --platform all --non-interactive --no-wait

@@ -1,0 +1,26 @@
+name: api-check
+
+# Regenerates src/api/schema.gen.ts from the staging openapi.json and fails on drift.
+on:
+  pull_request:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      api_spec:
+        description: openapi.json URL (defaults to staging)
+        required: false
+
+jobs:
+  api-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - run: bun install --frozen-lockfile
+      - run: bun run api:check
+        env:
+          API_SPEC: ${{ inputs.api_spec || vars.API_SPEC || 'https://api-staging.gezcez.com/openapi.json' }}
