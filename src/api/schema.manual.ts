@@ -63,6 +63,31 @@ export interface ManualSchemas {
 		route_short_name: string | null
 	}
 	CardHistory: { month: string; currency: string; items: ManualSchemas["CardTransaction"][] }
+	// Community reports (mobile.md L6). Not in backend.md yet beyond `POST /v1/reports {kind, ref, text}`;
+	// shaped here under /v1/me so the bearer token only goes to /v1/me* (security review).
+	ReportInput: {
+		kind: "crowding" | "delay" | "stop_issue"
+		ref: { type: "stop" | "vehicle" | "route"; network_id: string; id: string }
+		crowding?: "low" | "medium" | "high" | "full"
+		delay_min?: number
+		issue?: "damaged" | "shelter" | "sign" | "accessibility" | "dirty" | "other"
+		text?: string
+	}
+	Report: ManualSchemas["ReportInput"] & {
+		id: string
+		/** pending until a moderator (dashboard) publishes or rejects it. */
+		status: "pending" | "published" | "rejected"
+		created_at: string
+		label: string | null
+	}
+	ReportList: { items: ManualSchemas["Report"][] }
+	/** Aggregated recent crowding reports on one vehicle; null when there are none in the window. */
+	VehicleCrowding: {
+		level: "low" | "medium" | "high" | "full"
+		reports: number
+		window_min: number
+		updated_at: string
+	} | null
 }
 
 type S = ManualSchemas
@@ -75,4 +100,6 @@ export type ManualPaths = {
 		never,
 		Op<never, NetworkPath, S["CardHistory"], { card_number: string; month: string }>
 	>
+	"/v1/me/reports": Item<Op<never, never, S["ReportList"]>, Op<never, never, S["Report"], S["ReportInput"]>>
+	"/v1/vehicles/{vehicleId}/crowding": Item<Op<never, { vehicleId: string }, S["VehicleCrowding"]>>
 }
