@@ -135,6 +135,26 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v1/account/device-accounts/{sessionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Forget an account on this browser
+         * @description Signs out the account's sessions on this device and removes it from the account chooser. Signing in again brings it back.
+         */
+        delete: operations["Account_forgetDeviceAccount"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/account/email/change": {
         parameters: {
             query?: never;
@@ -444,6 +464,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v1/app/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Remote config: update versions, flags, kill switches, announcement, tiles, WS URL */
+        get: operations["AppConfig_config"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/cities": {
         parameters: {
             query?: never;
@@ -626,6 +663,117 @@ export type paths = {
         get: operations["Networks_cities"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/email/deliveries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Email log, recipients masked
+         * @description `q` matches the id, a subject substring or a template prefix. Sort: created_at, updated_at.
+         */
+        get: operations["EmailAdmin_deliveries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/email/suppressions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Suppressed addresses (masked); `q` matches the masked address */
+        get: operations["EmailAdmin_suppressions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/email/suppressions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a suppression with a reason (audited) */
+        delete: operations["EmailAdmin_removeSuppression"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/email/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Template keys, locales and variables with sample values */
+        get: operations["EmailAdmin_templates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/email/templates/{key}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Render a template server-side
+         * @description Variables left out take the template's sample values. Nothing is sent.
+         */
+        post: operations["EmailAdmin_preview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dash/email/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a test email with sample variables
+         * @description Goes to the caller's own address unless `to` is given, which needs email.test.send.any. The subject starts with [TEST].
+         */
+        post: operations["EmailAdmin_sendTest"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1205,6 +1353,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v1/dash/users/{userId}/emails": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Deliveries to one user (metadata only) */
+        get: operations["EmailAdmin_userEmails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/dash/users/{userId}/reveal-email": {
         parameters: {
             query?: never;
@@ -1378,6 +1543,40 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v1/networks/{networkId}/cards/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** One month of card transactions (capability card) */
+        post: operations["Cards_history"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/networks/{networkId}/cards/lookup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Card balance by card number (capability card) */
+        post: operations["Cards_lookup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/networks/{networkId}/pack": {
         parameters: {
             query?: never;
@@ -1522,7 +1721,10 @@ export type paths = {
         };
         get?: never;
         put?: never;
-        /** Consent answer (third-party clients) */
+        /**
+         * Consent answer, or deny from any page
+         * @description approve needs a session (third-party consent). deny works with only the device cookie, so pages without a session (banned, deleted) can return access_denied to the client.
+         */
         post: operations["OAuth_decision"];
         delete?: never;
         options?: never;
@@ -1609,6 +1811,38 @@ export type paths = {
             cookie?: never;
         };
         get: operations["Cities_providers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/public/analytics/fleet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PublicAnalytics_fleet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/public/analytics/quality": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PublicAnalytics_quality"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1811,7 +2045,7 @@ export type components = {
         };
         AlertDto: {
             active_from: string;
-            active_to: string[];
+            active_to: string | null;
             body: string;
             id: string;
             network_id: number;
@@ -1819,7 +2053,7 @@ export type components = {
             /** @enum {string} */
             severity: "info" | "warning" | "severe";
             title: string;
-            url: string[];
+            url: string | null;
         };
         ApiError: {
             code: components["schemas"]["ErrorCode"];
@@ -1828,6 +2062,45 @@ export type components = {
             };
             message: string;
             request_id: string;
+        };
+        AppConfigDto: {
+            announcement: {
+                body: {
+                    en: string;
+                    tr: string;
+                };
+                id: string;
+                /** @enum {string} */
+                level: "info" | "warning";
+                title: {
+                    en: string;
+                    tr: string;
+                };
+                url: string | null;
+            } | null;
+            flags: {
+                [key: string]: boolean;
+            };
+            /** @description Feature availability: false turns a feature off (cards, live_map, ...) */
+            kill_switches: {
+                [key: string]: boolean;
+            };
+            /** @description Older apps must update (force update) */
+            min_supported_version: string;
+            /** @description Older apps are nudged to update */
+            soft_update_version: string | null;
+            tiles_style_url: {
+                /** Format: uri */
+                dark: string;
+                /** Format: uri */
+                light: string;
+            };
+            /**
+             * @description The caller's update state, from `version` (none without it)
+             * @enum {string}
+             */
+            update: "none" | "soft" | "force";
+            ws_url: string;
         };
         AppDetail: {
             access_ttl_s: number;
@@ -2041,8 +2314,35 @@ export type components = {
                 [key: string]: number;
             };
             positions_hot: number;
-            success_rate: number[];
+            success_rate: number | null;
             window_hours: number;
+        };
+        CardHistoryBodyDto: {
+            card_number: string;
+            month: string;
+        };
+        CardHistoryDto: {
+            currency: string;
+            items: {
+                amount: number;
+                /** Format: date-time */
+                at: string;
+                balance_after: number | null;
+                /** @enum {string} */
+                kind: "boarding" | "topup" | "transfer" | "other";
+                route_short_name: string | null;
+            }[];
+            month: string;
+        };
+        CardLookupBodyDto: {
+            card_number: string;
+        };
+        CardLookupDto: {
+            /** Format: date-time */
+            as_of: string;
+            balance: number;
+            card_type: string | null;
+            currency: string;
         };
         CityDto: {
             bbox: [
@@ -2178,7 +2478,7 @@ export type components = {
             }[];
         };
         ControlResultDto: {
-            error: string[];
+            error: string | null;
             ok: boolean;
             status: {
                 binding_id: number;
@@ -2261,11 +2561,11 @@ export type components = {
                 [key: string]: unknown;
             };
             created_at: string;
-            disabled_reason: string[];
+            disabled_reason: string | null;
             external_ref: string;
             id: number;
             idle_poll_interval_s: number;
-            last_feed_at: string[];
+            last_feed_at: string | null;
             network_id: number;
             poll_interval_s: number;
             provider_key: string;
@@ -2273,10 +2573,10 @@ export type components = {
             replayed: boolean;
             /** @enum {string} */
             state: "ok" | "degraded" | "down" | "paused" | "killed" | "unknown";
-            state_message: string[];
+            state_message: string | null;
             /** @enum {string} */
             status: "active" | "paused" | "disabled";
-            updated_at: string[];
+            updated_at: string | null;
         };
         DashCityDto: {
             bbox: [
@@ -2285,8 +2585,8 @@ export type components = {
                 number,
                 number
             ] | null;
-            center_lat: number[];
-            center_lon: number[];
+            center_lat: number | null;
+            center_lon: number | null;
             country_code: string;
             id: number;
             name: {
@@ -2348,18 +2648,18 @@ export type components = {
                 updated_at: string | null;
             }[];
             city_id: number;
-            colour: string[];
+            colour: string | null;
             created_at: string;
             id: number;
             name: string;
             /** @enum {string} */
             network_status: "active" | "degraded" | "disabled";
-            network_status_message: string[];
-            operator_name: string[];
+            network_status_message: string | null;
+            operator_name: string | null;
             slug: string;
             /** @enum {string} */
             status: "draft" | "public" | "hidden";
-            updated_at: string[];
+            updated_at: string | null;
         };
         DashProviderDetailDto: {
             /** @description An adapter for this key exists in this build */
@@ -2404,14 +2704,14 @@ export type components = {
                 /** @enum {string} */
                 state: "ok" | "missing" | "refreshing" | "auth_failed" | "unknown";
             }[];
-            disabled_reason: string[];
+            disabled_reason: string | null;
             /** @description Dashboard kill switch (providers.enabled) */
             enabled: boolean;
             /** @description PROVIDER_<KEY>_ENABLED hard kill */
             env_enabled: boolean;
-            image_url: string[];
+            image_url: string | null;
             key: string;
-            legal_note: string[];
+            legal_note: string | null;
             name: string;
             pulled_data: {
                 can_optout: boolean;
@@ -2424,7 +2724,7 @@ export type components = {
                 requests_per_second: number;
             } | null;
             replayed: boolean;
-            url: string[];
+            url: string | null;
         };
         DashProviderDto: {
             /** @description An adapter for this key exists in this build */
@@ -2455,14 +2755,14 @@ export type components = {
                 trip_planner: false;
                 trip_updates: boolean;
             } | null;
-            disabled_reason: string[];
+            disabled_reason: string | null;
             /** @description Dashboard kill switch (providers.enabled) */
             enabled: boolean;
             /** @description PROVIDER_<KEY>_ENABLED hard kill */
             env_enabled: boolean;
-            image_url: string[];
+            image_url: string | null;
             key: string;
-            legal_note: string[];
+            legal_note: string | null;
             name: string;
             pulled_data: {
                 can_optout: boolean;
@@ -2471,7 +2771,7 @@ export type components = {
                 key: string;
             }[];
             replayed: boolean;
-            url: string[];
+            url: string | null;
         };
         DashUser: {
             ban: components["schemas"]["Ban"] | null;
@@ -2532,6 +2832,8 @@ export type components = {
             generated_at: string;
             items: {
                 cancelled: boolean;
+                /** @description Direction of the trip's pattern */
+                direction: 0 | 1;
                 headsign: string | null;
                 predicted_at: string | null;
                 route: {
@@ -2590,6 +2892,27 @@ export type components = {
         EmailChangeResultDto: {
             email: string;
         };
+        EmailDelivery: {
+            attempts: number;
+            /** Format: date-time */
+            created_at: string;
+            id: string;
+            last_error: string | null;
+            locale: components["schemas"]["Locale"];
+            status: components["schemas"]["EmailStatus"];
+            subject: string;
+            template: string;
+            to_masked: string;
+            /** Format: date-time */
+            updated_at: string;
+            user: components["schemas"]["UserRef"] | null;
+        };
+        EmailDeliveryPageDto: {
+            items: components["schemas"]["EmailDelivery"][];
+            next_cursor: string | null;
+            prev_cursor: string | null;
+            total: number | null;
+        };
         EmailFlowDto: {
             /** @constant */
             code_length: 6;
@@ -2598,6 +2921,18 @@ export type components = {
             flow_id: string;
             /** Format: date-time */
             resend_available_at: string;
+        };
+        EmailPreviewDto: {
+            html: string;
+            subject: string;
+            text: string;
+        };
+        EmailPreviewRequestDto: {
+            locale: components["schemas"]["Locale"];
+            /** @default {} */
+            variables: {
+                [key: string]: string;
+            };
         };
         EmailResendDto: {
             flow_id: string;
@@ -2621,6 +2956,44 @@ export type components = {
             locale: "tr" | "en";
             request_id?: string;
             turnstile_token?: string;
+        };
+        /** @enum {string} */
+        EmailStatus: "queued" | "sent" | "delivered" | "bounced" | "complained" | "failed";
+        EmailSuppression: {
+            /** Format: date-time */
+            created_at: string;
+            detail: string | null;
+            email_masked: string;
+            id: string;
+            /** @enum {string} */
+            reason: "bounce" | "complaint" | "manual";
+        };
+        EmailSuppressionPageDto: {
+            items: components["schemas"]["EmailSuppression"][];
+            next_cursor: string | null;
+            prev_cursor: string | null;
+            total: number | null;
+        };
+        EmailTemplate: {
+            description: string;
+            key: string;
+            locales: components["schemas"]["Locale"][];
+            variables: {
+                description: string;
+                example: string;
+                name: string;
+            }[];
+        };
+        EmailTemplateListDto: components["schemas"]["EmailTemplate"][];
+        EmailTestRequestDto: {
+            locale: components["schemas"]["Locale"];
+            template: string;
+            /** Format: email */
+            to?: string;
+        };
+        EmailTestResultDto: {
+            delivery_id: string;
+            to_masked: string;
         };
         EmailVerifyDto: {
             code: string;
@@ -2691,6 +3064,10 @@ export type components = {
             updated_at: string | null;
             version: number;
         };
+        ForgetDeviceAccountResultDto: {
+            forgotten: boolean;
+            signed_out_current: boolean;
+        };
         HealthDto: {
             /** @constant */
             status: "ok";
@@ -2735,6 +3112,8 @@ export type components = {
                 y: string;
             }[];
         };
+        /** @enum {string} */
+        Locale: "tr" | "en";
         LogoutDto: {
             client_id?: string;
             post_logout_redirect_uri?: string;
@@ -2890,7 +3269,7 @@ export type components = {
                 trip_updates: boolean;
             };
             city_id: number;
-            colour: string[];
+            colour: string | null;
             freshness: {
                 realtime_feed_at: string | null;
                 static_may_be_outdated: boolean;
@@ -2899,9 +3278,9 @@ export type components = {
             id: number;
             modes: ("tram" | "metro" | "rail" | "bus" | "ferry" | "cable_tram" | "aerial_lift" | "funicular" | "trolleybus" | "monorail")[];
             name: string;
-            operator_name: string[];
+            operator_name: string | null;
             /** @description Changes whenever the static data changes */
-            pack_version: string[];
+            pack_version: string | null;
             privacy: {
                 provider: string;
                 pulled_data: {
@@ -2914,7 +3293,7 @@ export type components = {
             slug: string;
             /** @enum {string} */
             status: "active" | "degraded" | "disabled";
-            status_message: string[];
+            status_message: string | null;
         };
         NetworkRef: {
             id: number;
@@ -3069,8 +3448,8 @@ export type components = {
                 started_at: string;
                 url_variant: ("primary" | "fallback") | null;
             }[];
-            next_cursor: string[];
-            prev_cursor: string[];
+            next_cursor: string | null;
+            prev_cursor: string | null;
             total: number | null;
         };
         PrivacyDto: {
@@ -3108,9 +3487,9 @@ export type components = {
         };
         ProviderPublicDto: {
             enabled: boolean;
-            image_url: string[];
+            image_url: string | null;
             key: string;
-            legal_note: string[];
+            legal_note: string | null;
             name: string;
             pulled_data: {
                 can_optout: boolean;
@@ -3118,7 +3497,61 @@ export type components = {
                 is_collected: boolean;
                 key: string;
             }[];
-            url: string[];
+            url: string | null;
+        };
+        PublicFleetDto: {
+            generated_at: string;
+            networks: {
+                city: string;
+                id: string;
+                name: string;
+                timezone: string;
+                today: {
+                    date: string;
+                    hours: [
+                        number,
+                        number
+                    ][];
+                    peak_vehicles: number;
+                    vehicle_hours: number;
+                    vehicles: number;
+                };
+                yesterday: {
+                    date: string;
+                    hours: [
+                        number,
+                        number
+                    ][];
+                    peak_vehicles: number;
+                    vehicle_hours: number;
+                    vehicles: number;
+                };
+            }[];
+        };
+        PublicQualityDto: {
+            cities: {
+                name: {
+                    en: string;
+                    tr: string;
+                };
+                networks: {
+                    days: {
+                        coverage: number | null;
+                        date: string;
+                        gap_minutes: number;
+                        lag_p95_s: number | null;
+                        score: number | null;
+                        success_rate: number | null;
+                    }[];
+                    id: string;
+                    name: string;
+                    score: number | null;
+                }[];
+                score: number | null;
+                slug: string;
+            }[];
+            from: string;
+            to: string;
         };
         PutFavouritesDto: {
             groups: {
@@ -3250,8 +3683,8 @@ export type components = {
             grace: "none" | "24h" | "7d";
         };
         RouteDetailDto: {
-            agency: string[];
-            colour: string[];
+            agency: string | null;
+            colour: string | null;
             directions: {
                 direction: number;
                 headsign: string | null;
@@ -3279,7 +3712,7 @@ export type components = {
             network_id: number;
             route_type: number;
             short_name: string;
-            text_colour: string[];
+            text_colour: string | null;
         };
         RoutePageDto: {
             items: {
@@ -3295,8 +3728,8 @@ export type components = {
                 short_name: string;
                 text_colour: string | null;
             }[];
-            next_cursor: string[];
-            prev_cursor: string[];
+            next_cursor: string | null;
+            prev_cursor: string | null;
             total: number | null;
         };
         RouteShapeDto: {
@@ -3428,7 +3861,7 @@ export type components = {
             tos_version: string;
         };
         StopDetailDto: {
-            code: string[];
+            code: string | null;
             /** @description Stable public id, e.g. 1.41003 */
             id: string;
             lat: number;
@@ -3459,9 +3892,12 @@ export type components = {
                 name: string;
                 network_id: number;
             }[];
-            next_cursor: string[];
-            prev_cursor: string[];
+            next_cursor: string | null;
+            prev_cursor: string | null;
             total: number | null;
+        };
+        SuppressionDeleteDto: {
+            reason: string;
         };
         SwitchSessionDto: {
             session_id: string;
@@ -3471,7 +3907,7 @@ export type components = {
             counts: {
                 [key: string]: number;
             };
-            error: string[];
+            error: string | null;
             run_id: number;
             /** @enum {string} */
             status: "ok" | "unchanged" | "failed";
@@ -3494,8 +3930,8 @@ export type components = {
                 version_id: number | null;
                 warnings: string[] | null;
             }[];
-            next_cursor: string[];
-            prev_cursor: string[];
+            next_cursor: string | null;
+            prev_cursor: string | null;
             total: number | null;
         };
         TelemetryAcceptedDto: {
@@ -3517,7 +3953,7 @@ export type components = {
             platform: "ios" | "android";
         };
         TimetableDto: {
-            date: string[];
+            date: string | null;
             /** @enum {string} */
             day_type: "weekday" | "saturday" | "sunday";
             patterns: {
@@ -3641,7 +4077,7 @@ export type components = {
         /** @enum {string} */
         UserStatus: "active" | "unverified" | "banned" | "pending_deletion";
         VehicleDetailDto: {
-            accessible: boolean[];
+            accessible: boolean | null;
             current_run: {
                 direction: number | null;
                 end_reason: string | null;
@@ -3656,11 +4092,11 @@ export type components = {
             } | null;
             direction: number | null;
             id: string;
-            label: string[];
+            label: string | null;
             last_seen_at: string;
             live: boolean;
             network_id: number;
-            plate: string[];
+            plate: string | null;
             position: {
                 bearing: number | null;
                 feed_ts: number;
@@ -3695,15 +4131,15 @@ export type components = {
                 started_at: string;
                 trip_id: string | null;
             }[];
-            stop_id: string[];
+            stop_id: string | null;
             stop_seq: number | null;
-            trip_id: string[];
+            trip_id: string | null;
         };
         VehicleSnapshotDto: {
             /** @description Unix seconds of the newest poll */
             feed_ts: number | null;
             fields: string[];
-            message: string[];
+            message: string | null;
             network_id: number;
             /** @enum {string} */
             status: "active" | "degraded" | "disabled";
@@ -3724,7 +4160,7 @@ export type components = {
             type: "auth";
         } | {
             /** @enum {string} */
-            channel: "vehicles" | "departures" | "tracker.status" | "tracker.logs";
+            channel: "vehicles" | "departures" | "tracker.status" | "tracker.logs" | "ops.logs" | "health" | "jobs";
             id: string;
             /** @default {} */
             params: {
@@ -3749,6 +4185,15 @@ export type components = {
             /** @default 10 */
             limit: number;
             stop: string;
+        };
+        WsOpsLogsParams: {
+            /**
+             * @default info
+             * @enum {string}
+             */
+            level: "trace" | "debug" | "info" | "warn" | "error" | "fatal";
+            /** @default 100 */
+            tail: number;
         };
         WsServerMessage: {
             heartbeat_s: number;
@@ -3785,6 +4230,8 @@ export type components = {
             generated_at: string;
             items: {
                 cancelled: boolean;
+                /** @description Direction of the trip's pattern */
+                direction: 0 | 1;
                 headsign: string | null;
                 predicted_at: string | null;
                 route: {
@@ -4115,6 +4562,44 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["DeviceAccountsDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Account_forgetDeviceAccount: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required on writes; from GET /v1/account/csrf */
+                "X-CSRF-Token"?: string;
+            };
+            path: {
+                sessionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ForgetDeviceAccountResultDto"];
                         /** @enum {boolean} */
                         ok: true;
                     };
@@ -4941,6 +5426,42 @@ export interface operations {
             };
         };
     };
+    AppConfig_config: {
+        parameters: {
+            query?: {
+                platform?: "ios" | "android";
+                version?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AppConfigDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     Cities_list: {
         parameters: {
             query?: never;
@@ -5442,6 +5963,233 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["DashCityDto"][];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    EmailAdmin_deliveries: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+                q?: string;
+                sort?: string;
+                status?: components["schemas"]["EmailStatus"];
+                template?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["EmailDeliveryPageDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    EmailAdmin_suppressions: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+                q?: string;
+                reason?: "bounce" | "complaint" | "manual";
+                sort?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["EmailSuppressionPageDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    EmailAdmin_removeSuppression: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SuppressionDeleteDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["DeletedDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    EmailAdmin_templates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["EmailTemplateListDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    EmailAdmin_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailPreviewRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["EmailPreviewDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    EmailAdmin_sendTest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailTestRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["EmailTestResultDto"];
                         /** @enum {boolean} */
                         ok: true;
                     };
@@ -6813,6 +7561,46 @@ export interface operations {
             };
         };
     };
+    EmailAdmin_userEmails: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+                q?: string;
+                sort?: string;
+            };
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["EmailDeliveryPageDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     DashUsers_revealEmail: {
         parameters: {
             query?: never;
@@ -7254,6 +8042,84 @@ export interface operations {
             };
         };
     };
+    Cards_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                networkId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CardHistoryBodyDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["CardHistoryDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    Cards_lookup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                networkId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CardLookupBodyDto"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["CardLookupDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     Pack_pack: {
         parameters: {
             query?: never;
@@ -7377,11 +8243,15 @@ export interface operations {
             query?: {
                 /** @description w,s,e,n; max 0.5 degree span, snapped to z12 tiles */
                 bbox?: string;
+                /** @description full adds plate, stop and headsign; needs a bearer token with the dash scope and vehicles.live.read */
+                detail?: "compact" | "full";
                 direction?: number;
                 /** @description Comma separated stable route ids (max 12) */
                 routes?: string;
             };
-            header?: never;
+            header: {
+                authorization: string;
+            };
             path: {
                 networkId: string;
             };
@@ -7389,7 +8259,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Live vehicles as compact arrays in the order of `fields` (same as the WS snapshot) */
+            /** @description Live vehicles as arrays in the order of `fields` (same as the WS snapshot). Public for compact rows; detail=full needs a dash token with vehicles.live.read */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -7793,6 +8663,80 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["ProviderPublicDto"][];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    PublicAnalytics_fleet: {
+        parameters: {
+            query?: {
+                /** @description City slug (default: every public city) */
+                city?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Fleet in service today and yesterday */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PublicFleetDto"];
+                        /** @enum {boolean} */
+                        ok: true;
+                    };
+                };
+            };
+            /** @description Error envelope */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    PublicAnalytics_quality: {
+        parameters: {
+            query?: {
+                /** @description City slug (default: every public city) */
+                city?: string;
+                /** @description Closed days back */
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Daily data reliability score per city */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PublicQualityDto"];
                         /** @enum {boolean} */
                         ok: true;
                     };

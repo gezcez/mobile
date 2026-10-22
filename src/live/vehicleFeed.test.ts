@@ -26,7 +26,7 @@ describe("VehicleFeed", () => {
 			network_id: 1,
 			feed_ts: 100,
 			status: "active" as const,
-			message: [] as string[],
+			message: null,
 			fields: [...COMPACT_FIELDS],
 			vehicles: [row("rest-1")],
 		}))

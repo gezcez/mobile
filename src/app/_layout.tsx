@@ -75,7 +75,7 @@ function RootStack() {
 	useUpdatePrompts()
 	const onboarded = usePrefsStore((s) => s.onboarded)
 	const config = useAppConfig()
-	const mustUpdate = isBelow(env.appVersion, config.data?.minSupportedVersion)
+	const mustUpdate = config.data?.update === "force" || isBelow(env.appVersion, config.data?.minSupportedVersion)
 	const sheet = {
 		presentation: "formSheet" as const,
 		sheetAllowedDetents: [0.6, 1],

@@ -8,7 +8,7 @@ const NOW = Date.parse("2026-10-22T09:00:00Z")
 const route = { id: "41265", networkId: "kocaeli-bus", shortName: "41C", longName: "Umuttepe - Merkez", mode: "bus" as const, color: "#d97706", textColor: "#ffffff" }
 const dep = (minutes: number, extra: Partial<Departure> = {}): Departure => ({
 	route,
-	direction: null,
+	direction: 0,
 	headsign: "Umuttepe",
 	tripId: `t${minutes}`,
 	scheduledAt: new Date(NOW + minutes * 60_000).toISOString(),

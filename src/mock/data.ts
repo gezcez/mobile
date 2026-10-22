@@ -1,10 +1,11 @@
 // data.ts
 // Wire-format (snake_case) responses computed from the mock world, shared by the mock fetch, the
 // mock live feed and tests. Shapes follow src/api/wire.ts: the backend's openapi.json where the
-// endpoint is published, schema.manual.ts where it is not (app config, cards).
+// endpoint is published.
 
 import polyline from "@mapbox/polyline"
 import type { W } from "@/api/wire"
+import { compareVersions } from "@/lib/version"
 import {
 	getWorld,
 	hash,
@@ -162,7 +163,7 @@ export function wireStop(id: string): W["Stop"] | null {
 	if (!s) return null
 	return {
 		...wireStopSummary(s),
-		code: s.code as unknown as W["Stop"]["code"], // the spec types it as string[] (backend export bug); the API sends a string
+		code: s.code,
 		routes: [...s.routeIds].map((r) => wireRouteSummary(w.routes.get(r)!)),
 	}
 }
@@ -199,8 +200,6 @@ export function wirePack(slug: string): W["Pack"] | null {
 
 const headsignOf = (r: MockRoute, d: 0 | 1) => getWorld().stops.get(r.stops[d][r.stops[d].length - 1]!)!.name
 const patternId = (r: MockRoute, d: 0 | 1) => `${r.id}.p${d}`
-/** Root-DTO nullable fields are typed string[] by the spec (backend export bug); send what the API sends. */
-const asSpec = <T>(v: string | boolean | null): T => v as unknown as T
 
 export function wireRoute(id: string): W["Route"] | null {
 	const w = getWorld()
@@ -209,9 +208,9 @@ export function wireRoute(id: string): W["Route"] | null {
 	const summary = wireRouteSummary(r)
 	return {
 		...summary,
-		agency: asSpec(summary.agency),
-		colour: asSpec(summary.colour),
-		text_colour: asSpec(summary.text_colour),
+		agency: summary.agency,
+		colour: summary.colour,
+		text_colour: summary.text_colour,
 		directions: ([0, 1] as const).map((d) => ({
 			direction: d,
 			headsign: headsignOf(r, d),
@@ -268,7 +267,7 @@ export function wireTimetable(id: string, direction: 0 | 1 | undefined, dayType:
 	const dirs = direction === undefined ? ([0, 1] as const) : [direction]
 	return {
 		route_id: r.id,
-		date: asSpec(date),
+		date: date,
 		day_type: dayType,
 		service_labels: [dayType === "weekday" ? "Hafta içi" : dayType === "saturday" ? "Cumartesi" : "Pazar"],
 		patterns: dirs.map((d) => ({
@@ -419,7 +418,7 @@ export function wireVehiclesSnapshot(
 		network_id: n?.id ?? 0,
 		feed_ts: Math.floor(nowMs / 1000) - 15,
 		status: n?.status ?? "active",
-		message: asSpec(n?.statusMessage ?? null),
+		message: n?.statusMessage ?? null,
 		fields: COMPACT_FIELDS,
 		vehicles: filterVehicles(vehiclesFor(networkSlug, nowMs), p).map(compactRow),
 	}
@@ -446,10 +445,10 @@ export function wireVehicle(id: string, nowMs: number): W["Vehicle"] | null {
 		return {
 			id: v.id,
 			network_id: n.id,
-			plate: asSpec(v.plate),
-			label: asSpec(null),
+			plate: v.plate,
+			label: null,
 			live: true,
-			accessible: asSpec((v.flags & 2) !== 0),
+			accessible: (v.flags & 2) !== 0,
 			last_seen_at: iso(v.vehicleTs * 1000),
 			position: {
 				lat: v.lat,
@@ -462,8 +461,8 @@ export function wireVehicle(id: string, nowMs: number): W["Vehicle"] | null {
 			},
 			route: wireRouteSummary(w.routes.get(v.routeId)!),
 			direction: v.direction,
-			trip_id: asSpec(v.tripId),
-			stop_id: asSpec(v.stopId),
+			trip_id: v.tripId,
+			stop_id: v.stopId,
 			stop_seq: v.stopSeq,
 			current_run: run,
 			runs_today: [run],
@@ -512,6 +511,7 @@ export function wireDepartures(stopId: string, nowMs: number, limit = 30): W["De
 					}
 					items.push({
 						route: wireRouteSummary(route),
+						direction,
 						headsign,
 						trip_id: tripId,
 						scheduled_at: iso(midnightMs + schedS * 1000),
@@ -546,8 +546,8 @@ export function wireAlerts(networkSlug: string, nowMs: number): W["Alert"][] {
 			severity: "warning",
 			route_ids: ["4.41120"],
 			active_from: iso(nowMs - 2 * 86400_000),
-			active_to: asSpec<W["Alert"]["active_to"]>(iso(nowMs + 3 * 86400_000)),
-			url: asSpec<W["Alert"]["url"]>(null),
+			active_to: iso(nowMs + 3 * 86400_000),
+			url: null,
 		},
 	]
 }
@@ -593,10 +593,12 @@ export function wireNearby(lat: number, lon: number, radius: number, network?: s
 	}
 }
 
-export function wireAppConfig(): W["AppConfig"] {
+export function wireAppConfig(version?: string | null): W["AppConfig"] {
+	const min = "26.1.0"
 	return {
-		min_supported_version: "26.1.0",
+		min_supported_version: min,
 		soft_update_version: null,
+		update: version && compareVersions(version, min) < 0 ? "force" : "none",
 		flags: {},
 		kill_switches: { cards: true, live_map: true },
 		announcement: {
@@ -605,7 +607,7 @@ export function wireAppConfig(): W["AppConfig"] {
 			title: { tr: "Demo verisi", en: "Demo data" },
 			body: {
 				tr: "Bu derlemede gösterilen hatlar ve araçlar örnek veridir.",
-				en: "Lines and buses in this build are sample data.",
+				en: "Lines and vehicles in this build are sample data.",
 			},
 			url: null,
 		},

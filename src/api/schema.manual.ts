@@ -1,10 +1,8 @@
 // schema.manual.ts
-// MANUAL TYPES. The backend rewrite has not published these endpoints in openapi.json yet (app
-// config, card lookup and history), so they are typed by hand from backend.md in the same shape
-// openapi-typescript emits. When an endpoint appears in schema.gen.ts, delete it here (client.ts merges both and a
-// duplicate key becomes a type error in schema.check.ts).
-//
-// Wire format is snake_case; src/api/types.ts maps to the camelCase domain types.
+// MANUAL TYPES for endpoints the backend has not published in openapi.json yet, typed by hand in
+// the shape openapi-typescript emits. Empty now: every endpoint the app calls is generated. When a
+// new endpoint is needed before the backend publishes it, add it to ManualPaths with the Op/Item
+// helpers below (client.ts merges both; a duplicate key becomes a type error there).
 
 import type { components as gen } from "./schema.gen"
 
@@ -40,39 +38,11 @@ type Item<Get = never, Post = never, Put = never> = {
 	([Post] extends [never] ? { post?: never } : { post: Method<Post> }) &
 	([Put] extends [never] ? { put?: never } : { put: Method<Put> })
 
-export type I18nText = { tr: string; en: string }
-/** Route modes as the backend sends them (GTFS route_type names). */
-export type WireMode = gen["schemas"]["RouteDetailDto"]["mode"]
+/** Hand-typed wire schemas (none today). */
+export type ManualSchemas = Record<never, never>
 
-export interface ManualSchemas {
-	AppConfig: {
-		min_supported_version: string
-		soft_update_version: string | null
-		flags: Record<string, boolean>
-		kill_switches: { cards?: boolean; live_map?: boolean; [key: string]: boolean | undefined }
-		announcement: { id: string; level: "info" | "warning"; title: I18nText; body: I18nText; url: string | null } | null
-		tiles_style_url: { light: string; dark: string }
-		ws_url: string
-	}
-	CardLookup: { balance: number; currency: string; as_of: string; card_type: string | null }
-	CardTransaction: {
-		at: string
-		kind: "boarding" | "topup" | "transfer" | "other"
-		amount: number
-		balance_after: number | null
-		route_short_name: string | null
-	}
-	CardHistory: { month: string; currency: string; items: ManualSchemas["CardTransaction"][] }
-}
+/** Hand-typed paths (none today). Example: "/v1/x": Item<Op<never, never, ManualSchemas["X"]>> */
+export type ManualPaths = Record<never, never>
 
-type S = ManualSchemas
-type NetworkPath = { networkId: string }
-
-export type ManualPaths = {
-	"/v1/app/config": Item<Op<{ platform: "ios" | "android"; version: string }, never, S["AppConfig"]>>
-	"/v1/networks/{networkId}/cards/lookup": Item<never, Op<never, NetworkPath, S["CardLookup"], { card_number: string }>>
-	"/v1/networks/{networkId}/cards/history": Item<
-		never,
-		Op<never, NetworkPath, S["CardHistory"], { card_number: string; month: string }>
-	>
-}
+/** Keeps the helpers type-checked while no endpoint uses them. */
+export type ManualOp<Q, P, R, B = never, H = never> = Item<Op<Q, P, R, B, H>>

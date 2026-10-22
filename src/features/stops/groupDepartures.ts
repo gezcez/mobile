@@ -8,7 +8,7 @@ import { toMs } from "@/lib/time"
 export interface DepartureGroup {
 	key: string
 	route: RouteSummary
-	direction: 0 | 1 | null
+	direction: 0 | 1
 	headsign: string
 	items: Departure[]
 	next: Departure | null

@@ -147,7 +147,7 @@ export default function StopScreen() {
 											params: {
 												networkId,
 												routeId: g.route.id,
-												...(g.direction !== null ? { dir: String(g.direction) } : { headsign: g.headsign }),
+												dir: String(g.direction),
 												...(g.next?.vehicleId ? { vehicle: g.next.vehicleId } : {}),
 											},
 										})

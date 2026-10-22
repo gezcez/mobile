@@ -97,7 +97,7 @@ export function createMockFetch(opts: MockOptions = {}): typeof fetch {
 		const route = (re: RegExp) => (m = re.exec(path)) !== null
 
 		if (method === "GET") {
-			if (path === "/v1/app/config") return ok(wireAppConfig())
+			if (path === "/v1/app/config") return ok(wireAppConfig(q.get("version")))
 			if (path === "/v1/cities") return ok(wireCities())
 			if (route(/^\/v1\/cities\/([^/]+)\/manifest$/)) {
 				const manifest = wireManifest(decodeURIComponent(m![1]!), nowMs)

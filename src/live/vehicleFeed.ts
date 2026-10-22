@@ -30,6 +30,9 @@ export async function fetchVehicles(p: VehiclesParams) {
 		api.GET("/v1/networks/{networkId}/vehicles", {
 			params: {
 				path: { networkId: p.network },
+				// The spec marks the bearer as required because `detail=full` needs one; the compact
+				// feed is public and the auth middleware adds a bearer when signed in.
+				header: {} as { authorization: string },
 				query: {
 					...(p.routes?.length ? { routes: p.routes.join(",") } : {}),
 					...(p.direction !== undefined ? { direction: p.direction } : {}),

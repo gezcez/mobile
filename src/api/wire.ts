@@ -54,4 +54,12 @@ export type W = ManualSchemas & {
 	TelemetryCounters: G["TelemetryCountersDto"]
 	WsClientMessage: G["WsClientMessage"]
 	WsServerMessage: G["WsServerMessage"]
+	AppConfig: G["AppConfigDto"]
+	CardLookup: G["CardLookupDto"]
+	CardHistory: G["CardHistoryDto"]
+	CardTransaction: G["CardHistoryDto"]["items"][number]
 }
+
+export type I18nText = { tr: string; en: string }
+/** Route modes as the backend sends them (GTFS route_type names). */
+export type WireMode = G["RouteDetailDto"]["mode"]

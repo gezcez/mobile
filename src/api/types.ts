@@ -2,7 +2,7 @@
 // camelCase domain types (plan 3.2) and snake_case wire -> domain mappers over the schema types.
 // Screens only ever see these types.
 
-import type { I18nText, WireMode } from "./schema.manual"
+import type { I18nText, WireMode } from "./wire"
 import type { W } from "./wire"
 
 export type { I18nText }
@@ -107,8 +107,7 @@ export interface Stop extends StopSummary {
 
 export interface Departure {
 	route: RouteSummary
-	/** Not on the wire yet (backend DepartureSchema has no direction); null when unknown. */
-	direction: 0 | 1 | null
+	direction: 0 | 1
 	headsign: string
 	tripId: string | null
 	/** The schedule time, or the prediction when the trip has no scheduled time. */
@@ -200,6 +199,8 @@ export interface Alert {
 export interface AppConfig {
 	minSupportedVersion: string
 	softUpdateVersion: string | null
+	/** The server's verdict for this app version (sent with ?version=). */
+	update: "none" | "soft" | "force"
 	flags: Record<string, boolean>
 	killSwitches: { cards: boolean; liveMap: boolean }
 	announcement: { id: string; level: "info" | "warning"; title: I18nText; body: I18nText; url: string | null } | null
@@ -307,14 +308,9 @@ export function networkSlug(id: number, known?: string): string {
 
 const DEFAULT_TZ = "Europe/Istanbul"
 
-/**
- * Some nullable top-level fields of root DTOs are published in openapi.json as `string[]`
- * (a backend export bug; nested ones are correct). At runtime they are a string or null.
- */
-function nullable<T extends string | boolean>(v: T | T[] | null | undefined): T | null {
-	if (v === null || v === undefined) return null
-	if (Array.isArray(v)) return v[0] ?? null
-	return v
+/** Absent and null read the same. */
+function nullable<T extends string | boolean>(v: T | null | undefined): T | null {
+	return v ?? null
 }
 
 export function toMode(m: WireMode): Mode {
@@ -501,7 +497,7 @@ export const toDeparture = (d: W["Departure"], networkId?: string): Departure | 
 	const route = toRouteSummary(d.route, networkId)
 	return {
 		route,
-		direction: null,
+		direction: d.direction,
 		headsign: d.headsign ?? route.longName,
 		tripId: d.trip_id,
 		scheduledAt,
@@ -594,6 +590,7 @@ export const toAlert = (a: W["Alert"]): Alert => ({
 export const toAppConfig = (c: W["AppConfig"]): AppConfig => ({
 	minSupportedVersion: c.min_supported_version,
 	softUpdateVersion: c.soft_update_version,
+	update: c.update,
 	flags: c.flags,
 	// A kill switch value of false means the feature is switched off.
 	killSwitches: { cards: c.kill_switches.cards !== false, liveMap: c.kill_switches.live_map !== false },

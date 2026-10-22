@@ -43,7 +43,7 @@ import { Heading, Text } from "@/ui/Text"
 type Tab = "stops" | "vehicles" | "timetable"
 
 export default function RouteScreen() {
-	const params = useLocalSearchParams<{ networkId: string; routeId: string; dir?: string; headsign?: string; vehicle?: string }>()
+	const params = useLocalSearchParams<{ networkId: string; routeId: string; dir?: string; vehicle?: string }>()
 	const { networkId, routeId } = params
 	const { t } = useT()
 	const theme = useTheme()
@@ -59,14 +59,12 @@ export default function RouteScreen() {
 	const fix = useLocationStore((s) => s.fix)
 	const camera = useRef<CameraRef>(null)
 
-	// Direction: from ?dir=, else the direction whose headsign matches ?headsign= (departures have
-	// no direction on the wire yet), else the first.
+	// Direction: from ?dir=, else the first.
 	const directions = useMemo(() => route.data?.directions ?? [], [route.data])
 	const initialDir = useMemo<0 | 1>(() => {
 		if (params.dir === "0" || params.dir === "1") return Number(params.dir) as 0 | 1
-		const byHeadsign = directions.find((d) => params.headsign && d.headsign === params.headsign)
-		return byHeadsign?.direction ?? directions[0]?.direction ?? 0
-	}, [params.dir, params.headsign, directions])
+		return directions[0]?.direction ?? 0
+	}, [params.dir, directions])
 	const [dirOverride, setDir] = useState<0 | 1 | null>(null)
 	const dir = dirOverride ?? initialDir
 	const [tab, setTab] = useState<Tab>("stops")

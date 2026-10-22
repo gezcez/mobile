@@ -20,7 +20,7 @@ declare module "@tanstack/react-query" {
 
 export const PERSIST_MAX_AGE = 7 * 24 * 60 * 60 * 1000
 /** Bump when a mapper or a persisted shape changes, so old caches are dropped. */
-const CACHE_SCHEMA = "1"
+const CACHE_SCHEMA = "2" // 2: departures carry direction
 
 export function createQueryClient(): QueryClient {
 	return new QueryClient({

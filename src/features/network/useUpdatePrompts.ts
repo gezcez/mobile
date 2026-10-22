@@ -16,7 +16,10 @@ const SOFT_SHOWN = "gz.softUpdateShown"
 
 export function useUpdatePrompts() {
 	const { t } = useT()
-	const soft = useAppConfig().data?.softUpdateVersion ?? null
+	const config = useAppConfig().data
+	const soft = config?.softUpdateVersion ?? null
+	// The server's verdict wins; the version compare covers a config fetched without ?version=.
+	const softDue = config?.update === "soft" || (!!soft && hasSoftUpdate(env.appVersion, soft))
 	const { isUpdatePending, downloadedUpdate } = Updates.useUpdates()
 	const critical = isUpdatePending && isCriticalManifest(downloadedUpdate?.manifest)
 
@@ -26,8 +29,9 @@ export function useUpdatePrompts() {
 	}, [critical, t])
 
 	useEffect(() => {
-		if (!soft || !hasSoftUpdate(env.appVersion, soft) || kv.getString(SOFT_SHOWN) === soft) return
-		kv.set(SOFT_SHOWN, soft)
+		const seen = soft ?? "server"
+		if (!softDue || kv.getString(SOFT_SHOWN) === seen) return
+		kv.set(SOFT_SHOWN, seen)
 		toast(t("update.softTitle"), { action: { label: t("update.store"), onPress: () => void openStore() }, durationMs: 8000 })
-	}, [soft, t])
+	}, [soft, softDue, t])
 }
