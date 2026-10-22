@@ -20,6 +20,7 @@ import { useT } from "@/i18n/useT"
 import { deepLink, shareLink } from "@/lib/links"
 import { clockIn } from "@/lib/time"
 import { useNow } from "@/lib/useNow"
+import { useLiveDepartures } from "@/live/hooks"
 import { useTheme } from "@/theme/theme"
 import { IconButton } from "@/ui/Button"
 import { Card } from "@/ui/Card"
@@ -42,7 +43,9 @@ export default function StopScreen() {
 	const network = useNetwork(networkId).data
 	const tz = network?.timezone ?? DEFAULT_TZ
 	const stop = useQuery(stopQuery(networkId, stopId))
-	const deps = useQuery({ ...departuresQuery(networkId, stopId), refetchInterval: focused ? 20_000 : false })
+	// WS `departures` channel when connected; REST polling every 20 s otherwise (plan 5.5).
+	const live = useLiveDepartures(networkId, stopId, 30)
+	const deps = useQuery({ ...departuresQuery(networkId, stopId), refetchInterval: focused && !live ? 20_000 : false })
 	const [routeFilter, setRouteFilter] = useState<string | null>(null)
 	const saved = useSavedIn("stop", networkId, stopId)
 	const text = useCountdownText(tz)
